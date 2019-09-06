@@ -48,7 +48,6 @@
   }
   
   function addHandler(target,events){
-         console.log(Object.keys(events))
   	if(!target || !events || !Object.keys(events)){
   		return ;
   	}
