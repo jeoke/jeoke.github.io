@@ -58,7 +58,6 @@ function scrollContent(DOMSet,e){
   }else{
 		wheelDeltaData = -e.detail*40;
 	}
-  console.log(e.wheelDelta)
     if(wheelDeltaData > 0){
     	preScroll(index,DOMSet);
     }else{
