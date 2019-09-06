@@ -20,10 +20,6 @@ var fadeInAni = document.getElementsByClassName('nav-in')[0];
 
 
 function fadeOutAni(){
-	console.log(nav)
-	console.log(nav.className)
-
-	console.log(nav.className.indexOf('nav-animate'))
 	if(nav.className.indexOf('nav-animate') === -1){
 		fadeInAni.className = fadeInAni.className.replace(' nav-in', '');
 		nav.className += ' nav-animate';

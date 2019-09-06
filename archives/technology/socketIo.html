@@ -5,11 +5,11 @@
 	<title>socket.io即时通讯的功能实现</title>
   <meta name="keywords" content="socket.io即时通讯，node.js后端处理，javascript即时通讯逻辑"/>
   <meta name="description" content="网页即时通讯实现的基本思路，node后端处理简单的逻辑，jquery和socket.io实现即时通讯的总结"/>
-	<link rel="stylesheet" type="text/css" href="../../css/public/bootstrap.min.css">
-	<link rel="stylesheet" type="text/css" href="../../css/public/nav.css">
-  <link rel="shortcut icon" href="../../img/avitar.png" type="image/ico">
-  <link rel="icon" sizes="192x192" href="../../img/avitar.png">
-  <link rel="apple-touch-icon" href="../../img/avitar.png">
+	<link rel="stylesheet" type="text/css" href="/css/public/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="/css/public/nav.css">
+  <link rel="shortcut icon" href="/img/avitar.PNG" type="image/ico">
+  <link rel="icon" sizes="192x192" href="/img/avitar.PNG">
+  <link rel="apple-touch-icon" href="/img/avitar.PNG">
 </head>
 <body>
     <div class="nav-onOff nav-in">
@@ -20,20 +20,20 @@
 	<div class="wrapper wrapper-animate">
     <div class="nav-message">
       	<nav class="nav nav-animate">
-        <img src="../../img/avitar.png">
+        <img src="/img/avitar.PNG">
             <button type="button" class="btn btn-default nav-right" aria-label="Left Align" >
             <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
             </button>
         <ul class="list-group list-gap ">
             <li type="button" class="list-group-item">
-               <a href="../../page/classify.html">文章分类<span class="badge">4</span></a>
+               <a href="/page/classify.html">文章分类<span class="badge">4</span></a>
             </li>
             <li type="button" class="list-group-item">
-               <a href="../../index.html"><span class="badge"></span>
+               <a href="/index.html"><span class="badge"></span>
                实践列表</a>
             </li>
             <li type="button" class="list-group-item">
-               <a href="../../page/foundation.html"><span class="badge"></span>
+               <a href="/page/foundation.html"><span class="badge"></span>
                基础知识</a>
             </li>
             <li type="button" class="list-group-item">
@@ -63,14 +63,14 @@
 <div class="scrollPos">
 <h1><strong>聊天室实现</strong></h1>
 <h2>效果展示</h2>
-<img src="./img/socket.gif" width="620" height="440" style="margin-left: 20%">
+<img src="/archives/technology/img/socket.gif" width="620" height="440" style="margin-left: 20%">
 <p>https://socket.io/ 这是soket.io的官网</p>
 <p>即时通讯的原理是在浏览器不支持websocket通信协议时，将其转化为长轮询</p>
 <p>该库定义了即时通讯实现的逻辑</p>
 <pre>//服务端引用
 var socketio = require('socket.io');
 //客户端引用
-<script src="/socket.io/socket.io.js"></script>
+&lt;script src="/socket.io/socket.io.js"&gt;</script>
 </pre>
 <p>服务端通信</p>
 <pre>let serverSocket = http.Server(app); //这里的app,是webpack内部express封装的接口,express()
@@ -164,7 +164,7 @@ serverSocket.listen(3000);</pre>
 </div>
   </div>
   </div>
-	<script type="text/javascript" src="../../js/public.js"></script>
-  <script type="text/javascript" src="../../js/progress.js"></script>
+	<script type="text/javascript" src="/js/public.js"></script>
+  <script type="text/javascript" src="/js/progress.js"></script>
 </body>
 </html>

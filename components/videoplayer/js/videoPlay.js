@@ -3,8 +3,8 @@
 
   function Video(){
   	this.videoSetting = {
-         poster : './poster.jpg',
-         src : './video/saySomething.mp4',
+         poster : '/components/videoplayer/poster.jpg',
+         src : '/components/videoplayer/video/saySomething.mp4',
          type: 'video/mp4'
   	};
     this.init = function(domArr,classArr,idArr){

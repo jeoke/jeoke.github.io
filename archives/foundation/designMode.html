@@ -5,11 +5,11 @@
 	<title>javascript设计模式</title>
   <meta name="keywords" content="javascript设计模式，JavaScript设计模式实现Demo,设计模式"/>
   <meta name="description" content="Javascript设计模式最基本的分析，以及众多Demo的链接，全面又便于理解的JavaScript设计模式"/>
-	<link rel="stylesheet" type="text/css" href="../../css/public/bootstrap.min.css">
-	<link rel="stylesheet" type="text/css" href="../../css/public/nav.css">
-  <link rel="shortcut icon" href="../../img/avitar.png" type="image/ico">
-  <link rel="icon" sizes="192x192" href="../../img/avitar.png">
-  <link rel="apple-touch-icon" href="../../img/avitar.png">
+	<link rel="stylesheet" type="text/css" href="/css/public/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="/css/public/nav.css">
+  <link rel="shortcut icon" href="/img/avitar.PNG" type="image/ico">
+  <link rel="icon" sizes="192x192" href="/img/avitar.PNG">
+  <link rel="apple-touch-icon" href="/img/avitar.PNG">
 </head>
 <body>
     <div class="nav-onOff nav-in">
@@ -20,20 +20,20 @@
 	<div class="wrapper wrapper-animate">
     <div class="nav-message">
       	<nav class="nav nav-animate">
-        <img src="../../img/avitar.png">
+        <img src="/img/avitar.PNG">
             <button type="button" class="btn btn-default nav-right" aria-label="Left Align" >
             <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
             </button>
         <ul class="list-group list-gap ">
             <li type="button" class="list-group-item">
-               <a href="../../page/classify.html">文章分类<span class="badge">4</span></a>
+               <a href="/page/classify.html">文章分类<span class="badge">4</span></a>
             </li>
             <li type="button" class="list-group-item">
-               <a href="../../index.html"><span class="badge"></span>
+               <a href="/index.html"><span class="badge"></span>
                实践列表</a>
             </li>
             <li type="button" class="list-group-item">
-               <a href="../../page/foundation.html"><span class="badge"></span>
+               <a href="/page/foundation.html"><span class="badge"></span>
                基础知识</a>
             </li>
             <li type="button" class="list-group-item">
@@ -133,7 +133,7 @@ pub.get().set().get()
 <h2>门面模式</h2>
 <p>门面模式是指：将复杂的，常用的，抽象起来封装起来，在使用的时候只调用最外层包装的门面!!!</p>
 <p>比如：处理浏览器差异的事件监听，或者其他博文里写过的批量添加监听，获取设置style</p>
-<p>代码连接 <a href="../technology/other.html">点击这里</a></p>
+<p>代码连接 <a href="/archives/technology/other.html">点击这里</a></p>
 <h2>适配器模式</h2>
 <p>有时候，需要使用两个库，但是不可能直接改动底层代码，那么就可以使用一个函数转换接口返回的类型。</p>
 <p>比如：$(“#form”)[index] 将jquery对象转换为原生Js对象 </p>
@@ -178,15 +178,15 @@ A.prototype = {
 <h2>组合模式</h2>
 <p>比如播放器的第三种实现</p>
 <p>结构性的组合，父子类型的组合，比如react,vue的组件</p>
-<p><a href="../projects/videoPlayer.html">点击这里</a></p>
+<p><a href="/archives/projects/videoPlayer.html">点击这里</a></p>
 <h2>装饰者模式</h2>
 <p>该模式是由于一些额外的功能，不能让这些额外的功能直接写到对象里，因为如果这样如果需要的数量多了，就会加大工作量</p>
 <p>比如播放器第二种实现的progress类</p>
-<p><a href="../projects/videoPlayer.html">点击这里</a></p>
+<p><a href="/archives/projects/videoPlayer.html">点击这里</a></p>
 <h2>亨元模式</h2>
 <p>亨元模式是指在数据的组合多了的时候，将数据分为内在数据和外在数据，分开管理，最后组合在一起</p>
 <p>比如日历的日历数据和UI里，HTML日期排列</p>
-<p>实现链接如下：<a href="../projects/datePicker.html">点击这里</a></p>
+<p>实现链接如下：<a href="/archives/projects/datePicker.html">点击这里</a></p>
 <h2>代理模式</h2>
 <p>比如常见的事件代理，在给一个个事件绑定特定的同类事件太频繁的时候，或者某组操作太频繁。可以使用代理自动控制</p>
 <pre>
@@ -203,18 +203,18 @@ window.onload=function(){
 <h2>观察者模式 ---- 也称为发布-订阅模式</h2>
 <p>比如：动画的开始和结束的标识，滚动条滚动的方法，滚动条订阅状态，状态变量就如同一个观察者</p>
 <p>这里有两个参考Demo</p>
-<p>vue <a href="../technology/vueIntro.html">点击这里</a></p>
-<p>滚动条<a href="../projects/scrollbar.html">点击这里</a></p>
+<p>vue <a href="/archives/technology/vueIntro.html">点击这里</a></p>
+<p>滚动条<a href="/archives/projects/scrollbar.html">点击这里</a></p>
 <h2>命令模式</h2>
 <p>该模式是按照命令的顺序执行。比如动画，在执行动画时，逐渐将命令往后传递，这时一个函数就是一个命令</p>
-<p>一些其他实现，参考动画的封装<a href="../projects/other.html">点击这里</a></p>
+<p>一些其他实现，参考动画的封装<a href="/archives/projects/other.html">点击这里</a></p>
 <h2>职责链模式</h2>
 <p>职责链模式是在层次非常多的结构里才可以实现该设计，比如js的事件机制。当一层没有的时候继续搜索，有的话执行再继续搜索</p>
-<p>比如vue里compile的实现<a href="../technology/vueIntro.html">点击这里</a></p>
+<p>比如vue里compile的实现<a href="/archives/technology/vueIntro.html">点击这里</a></p>
 </div>
   </div>
   </div>
-	<script type="text/javascript" src="../../js/public.js"></script>
-  <script type="text/javascript" src="../../js/progress.js"></script>
+	<script type="text/javascript" src="/js/public.js"></script>
+  <script type="text/javascript" src="/js/progress.js"></script>
 </body>
 </html>

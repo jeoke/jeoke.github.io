@@ -6,12 +6,12 @@
   <meta name="keywords" content="计算机语言的意义，现实的可理解的编码，所有语言的基础"/>
   <meta name="description" content="编码是计算机，机械自动化专业都需要学习的通识知识，不管设计计算机和程序的基础，设计的知识面广，简单，易懂"/>
 
-	<link rel="stylesheet" type="text/css" href="../../css/public/bootstrap.min.css">
-	<link rel="stylesheet" type="text/css" href="../../css/public/nav.css">
-  <link rel="stylesheet" type="text/css" href="./css/code.css">
-  <link rel="shortcut icon" href="../../img/avitar.png" type="image/ico">
-  <link rel="icon" sizes="192x192" href="../../img/avitar.png">
-  <link rel="apple-touch-icon" href="../../img/avitar.png">
+	<link rel="stylesheet" type="text/css" href="/css/public/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="/css/public/nav.css">
+  <link rel="stylesheet" type="text/css" href="/archives/foundation/css/code.css">
+  <link rel="shortcut icon" href="/img/avitar.PNG" type="image/ico">
+  <link rel="icon" sizes="192x192" href="/img/avitar.PNG">
+  <link rel="apple-touch-icon" href="/img/avitar.PNG">
 </head>
 <body>
     <div class="nav-onOff nav-in">
@@ -22,20 +22,20 @@
 	<div class="wrapper wrapper-animate">
     <div class="nav-message">
       	<nav class="nav nav-animate">
-        <img src="../../img/avitar.png" class="avatar">
+        <img src="/img/avitar.PNG" class="avatar">
             <button type="button" class="btn btn-default nav-right" aria-label="Left Align" >
             <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
             </button>
         <ul class="list-group list-gap ">
             <li type="button" class="list-group-item">
-               <a href="../../page/classify.html">文章分类<span class="badge">4</span></a>
+               <a href="/page/classify.html">文章分类<span class="badge">4</span></a>
             </li>
             <li type="button" class="list-group-item">
-               <a href="../../index.html"><span class="badge"></span>
+               <a href="/index.html"><span class="badge"></span>
                实践列表</a>
             </li>
             <li type="button" class="list-group-item">
-               <a href="../../page/foundation.html"><span class="badge"></span>
+               <a href="/page/foundation.html"><span class="badge"></span>
                基础知识</a>
             </li>
             <li type="button" class="list-group-item">
@@ -74,14 +74,14 @@
 <p>除摩尔斯电码以外，曾经还出现过许多其他的编码，比如盲文，比如手语,比如文本</p>
 <p>但是摩尔斯码不同，比如中文和英文的逻辑互换，主要是对于表达内容的互换，而摩尔斯电码是：<strong>表达形式的互换</strong>即将点和划----文本的对应关系</P>
 <p>以下是摩尔电码表：</p>
-<img src="./img/mos.png">
+<img src="/archives/foundation/img/mos.PNG">
 <p>在上面的表中,点和划的不同组合形成了所有的英文字母</p>
 <p>但是，有了对应的电码和字母的对应，可以将信息转换成电码</p>
 <p>那么就有了一个问题，如何解码,让电码变成可以理解的内容</p>
 <p>用最简单的办法：</p>
 <p>就是将成对的，最简短，与电码对应内容的的对应关系排列出来</p>
 <p>下面就是解码表</p>
-<img src="./img/unmos.png">
+<img src="/archives/foundation/img/unmos.PNG">
 <p>仔细观察以上解码表，可以发现点和划的二进制逻辑的体现。</p>
 <p>码字的数目可以通过点和划的不同组合提高数量</p>
 <p>所以摩尔斯电码可以将所有的“文本”信息表示进去。</p>
@@ -89,24 +89,24 @@
 <p>手电筒开关的电气电路</p>
 <p>电灯泡的开关</p>
 <p>公共电路的使用</p>
-<img src="./img/publicEltric.PNG">
+<img src="/archives/foundation/img/publicEltric.PNG">
 <p>公共电路的使用使互相传递信息得以实现</p>
 <p>即：在一端开关，另一端得到信号的提示。只是这种初级的应用太过简陋。不适应更加复杂的模型</p>
 <h3>继电器和电报</h3>
 <p>下面是继电器</p>
-<img src="./img/eletricIn.png">
+<img src="/archives/foundation/img/eletricIn.PNG">
 <p>有过初中物理知识的都知道，在铁棒上绑上通电的线圈会产生电磁现象，即电磁铁会变得有磁性</p>
 <p>而通过这一发明，使得电报机接收信息并呈现在书面得以实现</p>
 <p>于是结合摩尔斯电码，远程传递信息实现了</p>
 <p>另外，还有了中继站</p>
-<img src="./img/eletricIn2.png">
+<img src="/archives/foundation/img/eletricIn2.PNG">
 <p>中继站模拟开关的使用，使人为控制输出目标成为可能，但是不得不说，电磁感应的出现具有巨大得推动作用</p>
 <h3>二进制</h3>
 <p>二进制使信息得以传递，于是一个1，0传递得信息量就是一比特，而我们惯用得10进制比特就是2得10次方就是一个字节，这样的信息计算是常识，也是来源于信息的最初传递时使用二进制的</p>
 <p>后来摩尔斯的二进制编码点，划改为1，0的表示方法，于是编码的数据表示法就可以转为比特来存储了</p>
 <p>那么信息，即编码如何在电路里转换呢</p>
 <p><strong>这就涉及与和非得逻辑了</strong></p>
-<img src="./img/orAnd.png">
+<img src="/archives/foundation/img/orAnd.PNG">
 <p>以上就是与和非得逻辑如果通过电路的不断累加，0，1，1的转换会在电路的逻辑上展现出来</p>
 <p>那这就涉及二进制的加法器了</p>
 <p>由于64个编码可以将英文这一语言的表达展现出来，那么需要多少个继电器呢？</p>
@@ -118,27 +118,27 @@
   <li>全加器需要两个半加器和一个或门组成，需要18个继电器</li>
   <li>8个全加器计算8位二进制加法器，需要144个继电器</li>
 </ul>
-<img src="./img/orAnd1.png">
+<img src="/archives/foundation/img/orAnd1.PNG">
 <p>这就是异或门的构造，由或门，与非门和与门形成</p>
 <p>事实上现在计算的计算机编码都是16位的，所以需要两个全加器，如下</p>
-<img src="./img/orAnd2.png">
+<img src="/archives/foundation/img/orAnd2.PNG">
 <p>如上图所示：两个信号进行相加并联到高位，高位运算再并联到高位，更改任何一个输入都会产生变化</p>
 <p><strong>一个加法计算器产生了</strong>，不过还没完，还有减法计算器</p>
 <p>如下图所示:是一个0，1的反向回路继电器</p>
-<img src="./img/beroad.png">
+<img src="/archives/foundation/img/beroad.PNG">
 <p>于是状态可以在0和1之间切换了，所有的与门，或门，非门加上这样的设计，就可以影响前置状态了，但是这样的设计是没有用，可以相互影响但是不能存留住状态，于是就有以下可以存留状态的设计</p>
-<img src="./img/load.png">
+<img src="/archives/foundation/img/load.PNG">
 <p>这个设计的关键在于上面电路的另外一根导线，未连通时电路是断开的，连接上面电路，上面或非门输出1，下面或非门也为1，上面导线连通的电路为通路，断开开关，左边上面导线开关连通，上面或非为1，下面或非门也为1，而闭合下面的开关，会导致灯泡熄灭，再关掉，会灯泡还是熄灭状态，因为上面的那根导线已经断路了</p>
 <p>于是，一个完整的加减法计算器诞生了。</p>
 <p>最为关键的是，可以根据计算保存状态信息，在计算器实现的同时也可以实现了锁存器</p>
-<img src="./img/keepdata.png">
+<img src="/archives/foundation/img/keepdata.PNG">
 <p>当需要写入时，将W端电路置为1，其余端口为0，这时会得到输出端存储的数据，当输入操作再次写入前，输出信息不变</p>
 <p>一些基本的元件已经诞生了，剩下的任务是根据这些元件电路组合其来形成不同作用的作用更明显的元件。</p>
 <p>其中最重要的是随机存储器，负责数据的存取，下面是随机存储器一个部件实现的电路图。备注：选择器的实现</p>
-<img src="./img/ram.png">
+<img src="/archives/foundation/img/ram.PNG">
 <p>S0,S1,S2是地址开关电路，D1-D7是数据输入端.根据地址码的输入的组合，形成不同的单一输出</p>
 <p>现在还有一个重要的元件：译码器</p>
-<img src="./img/loaddata.png">
+<img src="/archives/foundation/img/loaddata.PNG">
 <p>译码器的是实现与选择器的电路相反，是根据地址码将不同的输入信息保存为不同的输出信息</p>
 <p>这三个元件的实现就有了，根据写入和固定的地址保存了不同的信息，然后根据地址输出了反向的信息，即实现了信息的存取，没错，他们的组合就是RAM随机存储器。而它们越多，就能存取更多的数据。</p>
 <P>在上面的元件组合后，已经能够根据电路编写指令了的接口，另外就需要控制器，根据不同的电路输入，做一些不同电路输入对应的标识物，比如键盘，然后在电路中设计根据不同标识组合形成输出和存储的数据，然后将输出连接在在RAM上，形成对数据的存取控制操作---这就诞生了控制器，即指令的编码。</P>
@@ -164,7 +164,7 @@
 </div>
   </div>
   </div>
-	<script type="text/javascript" src="../../js/public.js"></script>
-  <script type="text/javascript" src="../../js/progress.js"></script>
+	<script type="text/javascript" src="/js/public.js"></script>
+  <script type="text/javascript" src="/js/progress.js"></script>
 </body>
 </html>
