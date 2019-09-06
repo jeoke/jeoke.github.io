@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>放大镜的开发</title>
+  <meta name="keywords" content="电商网站必备的效果，javascript轮子，javascript实现的放大镜"/>
+  <meta name="description" content="电商网站必备的放大镜效果的实现，附带javascript实现的完全分析"/>
+
+	<link rel="stylesheet" type="text/css" href="../../css/public/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="../../css/public/nav.css">
+  <link rel="shortcut icon" href="../../img/avitar.png" type="image/ico">
+  <link rel="icon" sizes="192x192" href="../../img/avitar.png">
+  <link rel="apple-touch-icon" href="../../img/avitar.png">
+</head>
+<body>
+    <div class="nav-onOff nav-in">
+	 <button type="button" class="btn btn-default" aria-label="Left Align">
+       <span class="glyphicon glyphicon-align-left" aria-hidden="true"></span>
+       </button>
+    </div>
+	<div class="wrapper wrapper-animate">
+    <div class="nav-message">
+      	<nav class="nav nav-animate">
+        <img src="../../img/avitar.png">
+            <button type="button" class="btn btn-default nav-right" aria-label="Left Align" >
+            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+            </button>
+        <ul class="list-group list-gap ">
+            <li type="button" class="list-group-item">
+               <a href="../../page/classify.html">文章分类<span class="badge">4</span></a>
+            </li>
+            <li type="button" class="list-group-item">
+               <a href="../../index.html"><span class="badge"></span>
+               实践列表</a>
+            </li>
+            <li type="button" class="list-group-item">
+               <a href="../../page/foundation.html"><span class="badge"></span>
+               基础知识</a>
+            </li>
+            <li type="button" class="list-group-item">
+               <span class="badge"></span>
+               进阶方向  ---待更新
+            </li>
+            <li type="button" class="list-group-item">
+               <span class="badge"></span>
+               node篇  ---待更新
+            </li>
+            <li type="button" class="list-group-item">
+               <span class="badge"></span>
+               其余工具分析篇  ---待更新
+            </li>
+        </ul>
+	    </nav>
+	</div>
+	</div>
+
+		<div class="progress rotate fiexd-pos">
+         <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45"      aria-valuemin="0" aria-valuemax="100" style="width: 0%">     
+            <span class="sr-only">阅读 100%</span>
+         </div>
+        </div>
+<div class="container">
+<div class="container box-shadow">
+<div class="scrollPos">
+<h1>放大镜开发分析</h1>
+<h2>放大镜开发的要点</h2>
+<p>放大镜开发必须要确定的需求：1，内容区域. 2，放大镜区域 3，鼠标的位置 4，比例尺</p>
+<p>首先需要定义放大镜的变量所需变量</p>
+<pre>(function(){
+    //初始化变量
+    var isMoveFocus = false; //是否移动
+    var focusElement = null; //焦点对象
+    var magnifierElement = null; //放大镜
+    var magnifierWidth = 400;  //放大镜的宽度
+    var focusZindex = 100;  //焦点的Z轴
+    var magnifierZindex=101;
+    var magnifierScale = 0; //比例尺
+    var eMagnifierMages = null; //放大镜对象
+
+    var focusArae = {    //焦点面积
+        "width":50,
+        "height":50
+    };
+
+    setCSS = function(el,option){};
+    getAbsoluteTop =function(el){};
+    getAbsoluteLeft = function(el){}
+
+    initMagnifierMages = function(el){}; //初始化焦点对象
+    mouseMagnifier = function(_e){}; //移动放大镜的方法
+
+    _mousepos = {            //鼠标在页面上的位置
+        "top":0,
+        "left":0
+    };
+
+    getMousePoint = function(_e){}; //获取鼠标在页面上的位置
+    pointCheck = function(_event,_e,options){};//检查鼠标位置
+    bodyMagnifiermousemove = function(_event){};//移动放大镜
+    focusPos = function(_e,_event){}//设置大图的焦点位置
+    focusStatus = function(){} //设置焦点的状态
+    initMagnifierPos = function(_e){}//初始化放大镜的位置
+    magnifierPos = function(_e,_event){} //设置放大镜的位置
+
+    eMagnifierMages = document.getElementById("imagesSource");
+    initMagnifierMages(eMagnifierMages);
+  
+    document.body.onmousemove = function(e){
+        bodyMagnifiermousemove(e);
+    }
+  })()
+</pre>
+<h3>主要的功能逻辑</h3>
+<h4>辅助方法</h4>
+<p>实现辅助类，设置css样式，获取TOP和LEFT，获取鼠标位置<strong>注意：</strong>以下有链式调用的写法</p>
+<pre>     setCss = function(_this,cssOpthion){ //设置元素样式
+    //判断节点类型
+       if(!_this || _this.nodeType === 3 || _this.nodeType === 8 || !_this.style){
+           return;
+       }
+       for(var cs in cssOpthion){ //遍历节点设置样式
+          _this.style[cs] = cssOpthion[cs];
+       }
+       return _this;     //链式调用的写法
+     };
+
+        //获取元素左边距
+    getAbsoluteLeft = function(_e){
+        var _left = _e.offsetLeft,
+        _current = _e.offsetParent;
+        while(_current !== null){
+            _left += _current.offsetLeft;
+            _current = _current.offsetParent;   //获取边距的写法
+        }
+        return _left;
+    };
+    //获取元素上边距
+    getAbsoluteTop = function(_e){
+        var _top = _e.offsetTop,
+        _current = _e.offsetParent;
+        while(_current !== null){
+            _top += _current.offsetTop;
+            _current = _current.offsetParent;
+        }
+        return _top;
+    };
+
+    //获取鼠标位置
+      getMousePoint = function(_e){
+        var _body = document.body,
+        _left = 0,
+        _top  = 0;
+
+        if(typeof window.pageYOffset != 'undefined'){
+            _left = window.pageXOffset;
+            _top = window.pageYOffset;
+        }else if(typeof document.compatMode != undefined && document.compatMode != 'BackCompat'){
+            _left = document.documentElement.scrollLeft;
+            _top = document.documentElement.scrollTop;   //兼容性处理
+        }else if(typeof _body != 'undefined'){
+            _left = _body.scrollLeft;
+            _top = _body.scrollTop;
+        }
+        _left += _e.clientX;
+        _top += _e.clientY;
+        _mousepos.left = _left;
+        _mousepos.top = _top;
+
+        return _mousepos;
+    };  
+  </pre>
+<h4>初始化整个视图元素及变量</h4>
+<p>初始化对象焦点，初始完对象焦点后初始化放大镜,设置放大镜的图片</p>
+<pre>    initMagnifierMages = function(_e){
+         //焦点对象
+         focusElement = setCss(document.getElementById("focusPoint"),{
+             "z-index":focusZindex,
+             "width":focusArae.width + "px",
+             "height":focusArae.height + "px"
+         });
+         //初始化放大镜位置
+         initMagnifierPos(_e);
+         //获取比例尺
+         magnifierScale = magnifierWidth/_e.offsetWidth;
+         var _img = _e.getAttribute("data-maxImg");  //设置大图
+         document.getElementById('magnifierImg').setAttribute("src", _img);
+         //设置放大图
+    };
+    
+    magnifierPos = function(_e,_event){
+         var _pos = getMousePoint(_event),
+         _top = magnifierScale * (_pos.top - getAbsoluteTop(_e)-focusArae.height/2),
+         _left = magnifierScale * (_pos.left - getAbsoluteLeft(_e)-focusArae.width/2);
+         if(_top < 0 || _left < 0){
+             return;
+         }
+         setCss(document.getElementById("magnifierImg"),{
+             "top":"-"+_top + 'px',
+             "left": "-" + _left + 'px'
+         });
+    };
+</pre>
+<h4>移动放大镜方法</h4>
+<p>移动放大镜的逻辑是固定放大镜，移动隐藏的图片</p>
+<pre>     bodyMagnifiermousemove = function(_event){
+        var _event = _event || window.event,
+        _e = eMagnifierMages;
+        if(pointCheck(_event,_e)){   //检查鼠标位置
+            isMoveFocus = true;      //定义鼠标状态变量
+            focusStatus();           //设置焦点状态
+            if(!isMoveFocus){
+                return;
+            }
+            focusPos(_e,_event);     //设置焦点位置
+            magnifierPos(_e,_event); //设置图片位置
+        }else{
+            isMoveFocus = false;
+            focusStatus();
+        }
+    };
+
+     pointCheck = function(_event,_e,options){
+    var _pos = getMousePoint(_event),
+    _w = options && options.width || _e.offsetWidth,  //获取元素宽度
+    _h = options && options.height || _e.offsetHeight, //获取元素高度
+    _left = getAbsoluteLeft(_e);
+    _top = getAbsoluteTop(_e);
+    _pos.left += options && options.left || 0;
+    //计算鼠标的top和left 是否落入元素的left与top内
+    if(_pos.left < (_left + _w) && _left < _pos.left && _pos.top > _top && _pos.top < (_top + _h)){
+        return true;
+    }
+    return false;
+    };
+
+    focusStatus = function(){
+    isMoveFocus && (setCss(focusElement,{
+        "display":"block"
+    })) && setCss(magnifierElement,{
+        "display":"block"
+    }) || (setCss(focusElement,{
+        "display":"none"
+    }) && setCss(magnifierElement,{
+        "display":"none"
+    })) 
+    };
+
+    focusPos = function(_e,_event){
+    var _pos = getMousePoint(_event),
+    _top = _pos.top - focusArae.height/2,
+    _left = _pos.left - focusArae.width/2;
+    setCss(focusElement,{
+        "top":_top + 'px',
+        "left":_left + 'px'
+    })
+    };
+
+    magnifierPos = function(_e,_event){
+    var _pos = getMousePoint(_event),
+    _top = magnifierScale * (_pos.top - getAbsoluteTop(_e)-focusArae.height/2),
+    _left = magnifierScale * (_pos.left - getAbsoluteLeft(_e)-focusArae.width/2);
+    if(_top < 0 || _left < 0){
+        return;
+    }
+    setCss(document.getElementById("magnifierImg"),{
+        "top":"-"+_top + 'px',
+        "left": "-" + _left + 'px'
+    });
+    };
+    
+  </pre>
+<p>放大镜完成了，只是要注意下css代码，放大的图片是放在放大镜的窗口的，移动的时候是移动放大的图片</p>
+<h4>css和html</h4>
+<pre>&lt;div id="imagesSource" data-maxImg="./images/psu2.png"&gt;
+    &lt;img src="./images/psu2.png" class="imageS" /&gt;
+    &lt;div id="focusPoint"&gt;&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="magnifier" id="magnifier"&gt;
+    &lt;img src="./images/psu2.png" class="maxImage" id='magnifierImg' src='./images/psu2.png'&gt;
+  &lt;/div&gt;
+
+   //css部分
+#focusPoint{
+  position: absolute;
+  display: none;
+  background: red;
+  border:2px #ccc outset;
+  position:absolute;
+  top:80px;
+  z-index: 100;
+  filter: alpha(opacity=50);
+  -moz-opacity:0.5;
+  opacity: 0.5;
+  cursor:move;
+}
+#imagesSource{
+  width:200px;
+  height: auto;
+}
+.imageS{
+  width: 200px;
+  height: 200px;
+}
+.magnifier{
+  width:80px;
+  height: 80px;
+  position: absolute;
+  display:none;
+  top:300px;
+  overflow:hidden;
+  margin:0px auto 0px;
+  left: 223px;
+}
+.maxImage{
+  width:400px;
+  height: 400px;
+  position: absolute;
+}
+</pre>
+<p>以上图片来源自定义</p>
+	</div>
+  </div>
+  </div>
+	<script type="text/javascript" src="../../js/public.js"></script>
+  <script type="text/javascript" src="../../js/progress.js"></script>
+</body>
+</html>

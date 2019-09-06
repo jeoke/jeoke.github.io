@@ -1,0 +1,114 @@
+form{
+	width:400px;
+	height: 50px;
+}
+form select{
+	width: 100px;
+	height: 50px;
+}
+#tab{
+	position: relative;
+	width: 570px;
+	height: 80px;
+}
+#tab div{
+	position: absolute;
+	top: 26px;
+	left: 0px;
+	width: 564px;
+	border: 1px solid #D4D3D3;
+	border-width: 0 1px 1px; 
+}
+#tab div{
+	display: none;
+}
+#tab .block{
+	display: block;
+	padding-bottom: 10px;
+}
+#tab h3{
+	float: left;
+	width: 114px;
+	height: 25px;
+	margin: 0px -1px 0px 0px;
+	line-height: 26px;
+	font-size: 14px;
+	font-weight: normal;
+	text-align: center;
+	color: #00007F;
+	cursor: pointer;
+}
+#tab .up{
+	background-color: #ddd;
+}
+
+#tab ul{
+	margin: 15px 0px 0px;
+	padding: 0;
+	list-style: none;
+}
+
+#tab li{
+	display: inline;
+	float: left;
+	width: 47.9%;
+	height: 22px;
+	line-height: 22px;
+	text-indent: 10px;
+	border: 1px dashed #DEDEDE;
+}
+*{
+	padding: 0;
+}
+#nav{
+	width:280px;
+	height: 42px;
+	position: absolute;
+	left: 20%;
+	right:20%;
+	top:20%;
+	bottom: 20%;
+	text-align: center;
+	background-color: #ccc;
+	cursor:pointer;
+}
+#nav li{
+	position: relative;
+	list-style: none;
+	width:50px;
+    float:left;
+    padding: 10px;
+}
+#nav div:before{
+	content: '';
+	display: block;
+	position: absolute;
+	height: 2px;
+	top: 0px;
+	right:50%;
+	left:50%;
+	background-color: red;
+	transition-property: all;
+    transition-timing-function: ease-in-out;
+    transition-duration: 1.3s;
+}
+#nav li:hover div:before{
+	left: 0;
+	right:0;
+}
+#nav ul{
+	padding-top:1px;
+	position: absolute;
+	top:42px;
+	left: 0;
+	display: none;
+}
+#nav ul li{
+	background-color: antiquewhite;
+}
+#nav ul li:hover{
+	background-color: red;
+}
+#nav li:hover ul{
+    display: block;
+}

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>日期组件的开发</title>
+  <meta name="keywords" content="javascript原生日历封装，javascript日历组件"/>
+  <meta name="description" content="renderUI模式的日历封装，使用了亨元设计模式"/>
+
+	<link rel="stylesheet" type="text/css" href="../../css/public/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="../../css/public/nav.css">
+  <link rel="shortcut icon" href="../../img/avitar.png" type="image/ico">
+  <link rel="icon" sizes="192x192" href="../../img/avitar.png">
+  <link rel="apple-touch-icon" href="../../img/avitar.png">
+</head>
+<body>
+    <div class="nav-onOff nav-in">
+	 <button type="button" class="btn btn-default" aria-label="Left Align">
+       <span class="glyphicon glyphicon-align-left" aria-hidden="true"></span>
+       </button>
+    </div>
+	<div class="wrapper wrapper-animate">
+    <div class="nav-message">
+      	<nav class="nav nav-animate">
+        <img src="../../img/avitar.png">
+            <button type="button" class="btn btn-default nav-right" aria-label="Left Align" >
+            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+            </button>
+        <ul class="list-group list-gap ">
+            <li type="button" class="list-group-item">
+               <a href="../../page/classify.html">文章分类<span class="badge">4</span></a>
+            </li>
+            <li type="button" class="list-group-item">
+               <a href="../../index.html"><span class="badge"></span>
+               实践列表</a>
+            </li>
+            <li type="button" class="list-group-item">
+               <a href="../../page/foundation.html"><span class="badge"></span>
+               基础知识</a>
+            </li>
+            <li type="button" class="list-group-item">
+               <span class="badge"></span>
+               进阶方向  ---待更新
+            </li>
+            <li type="button" class="list-group-item">
+               <span class="badge"></span>
+               node篇  ---待更新
+            </li>
+            <li type="button" class="list-group-item">
+               <span class="badge"></span>
+               其余工具分析篇  ---待更新
+            </li>
+        </ul>
+	    </nav>
+	</div>
+	</div>
+
+		<div class="progress rotate fiexd-pos">
+         <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45"      aria-valuemin="0" aria-valuemax="100" style="width: 0%">     
+            <span class="sr-only">阅读 100%</span>
+         </div>
+        </div>
+<div class="container">
+<div class="container box-shadow">
+<div class="scrollPos">
+<h1>日期组件的构造分析</h1>
+<h2>日期组件的外壳</h2>
+<p>首先分析我们需要的方法,由于选择了renderUI模式，那么就至少需要三个方法,一个初始化方法。分别是：</p>
+<ul>
+  <li>获取日期数据的getMonthDate</li>
+  <li>根据获取日期数据获取视图层字符串的方法buildUI</li>
+  <li>将视图层添加到DOM节点的render</li>
+  <li>绑定事件的，执行渲染。进行一系列业务操作的init</li>
+</ul>
+<p><strong>于是就有了以下，日期组件的外壳：</strong></p>
+<pre>function DatePicker(){
+
+}
+DatePcker.prototype = {
+  constructor:DatePicker,
+  getMonthDate:function(){
+
+  },
+  buildUI:function(){
+
+  },
+  render:function(){
+
+  },
+  init:function(){
+
+  }
+}
+</pre>
+<h3>getMonthDate方法</h3>
+<p>以需求导向，首先分析getMonthDate方法。</p>
+<p>先确定需要的数据，当年，当月，与当月所有的数据,而数据的来源必然是现在或者传入的日期</p>
+<pre>getMonthDate(year,month){
+   var rets = [];
+   if (!year || !month) {
+      var today = new Date(),
+      year = today.getFullYear(); //注意参数在初始化的时候已经在函数内部声明变量，无需声明
+      month = today.getMonth() + 1;
+   }
+}</pre>
+<p>如何获取当月所有的数据呢？</p>
+<p><strong>踩坑1:</strong>日期组件当月的数据是会有变化的，由于月前与月尾都会变化，那么就需要30+7+7天的数据,而且数据的排列是星期天到星期六的格式化数据</p>
+<p>那么就需要计算当月第一天，前月最后一天，与后月第一天</p>
+<p>问题再次出现，最后一天怎么计算？<strong>知识点1：</strong>月数的排列与日期自动退位<strong>new Date(year,month-1,0)</strong></p>
+<pre>var firstDay = new Date(year,month-1,1);//这个月第一天
+var firstDayWeekDay = firstDay.getDay();//星期几
+if (firstDayWeekDay === 0) {   //星期的纠正
+  firstDayWeekDay = 7
+}
+year = firstDay.getFullYear();
+month = firstDay.getMonth()+1;
+var lastDayOfLastMonth = new Date(year, month-1, 0);//上个月最后一天
+var lastDateOfLastMonth = lastDayOfLastMonth.getDate();//上个月最后一天的日期
+var preMonthDayCount = firstDayWeekDay - 1;//倒数星期的计数位
+var lastDay = new Date(year, month, 0);//这个月最后一天的日期
+var lastDate = lastDay.getDate();//这个月最后一天的星期
+</pre>
+<p>计算主要的日期数据已经完成，最后是将44天的数据放入数组</p>
+<pre>for(var i=0;i<7*6;i++){
+    var date = i+1-preMonthDayCount;//天数计数因为从0开始，而本月第一天是从1开始，那么最开始需要求日历的第一位算起，及求星期数的负数，即前面还有几天
+    var showDate = date;
+    var thisMonth = month;
+    if (date <= 0) {
+      thisMonth = month - 1;      //如果为负数，储存上月月数，和上月初始天数
+      showDate = lastDateOfLastMonth + date;  
+    }else if (date > lastDate) {
+      thisMonth = month + 1;      //如果大于本月天数，求下月天数
+      showDate = showDate -lastDate;
+    }
+    if(thisMonth === 0){
+      thisMonth = 12;
+    }
+    if(thisMonth === 13){
+      thisMonth = 1
+    }                              //本月数据直接存储
+    ret.push({
+      month:thisMonth,
+      date:date,
+      showDate:showDate
+    })
+}</pre>
+<p>到这里，数据的存储已经完毕</p>
+<h3>BuildUI方法</h3>
+<p>建立视图，需要传入年和月数，然后获取日期数据</p>
+<pre>monthData = this.getMonthDate(year,month);</pre>
+<p>信息已经获取到，剩下的就是将数据插入视图层需要的地方,为方便起见，不添加css样式</p>
+<pre>var html = '&lt;div&gt;'+
+         '&lt;a&gt;&lt;&lt;/a&gt;'+
+         '&lt;a&gt;&gt;&lt;/a&gt;'+
+         '&lt;span"&gt;'+monthData.year+'-'+monthData.month+'&lt;/span&gt;'+
+     '&lt;/div&gt;'+
+     '&lt;div"&gt;'+
+     '&lt;table&gt;'+
+     '&lt;thead&gt;'+
+            '&lt;tr&gt;'+
+                '&lt;th&gt;一&lt;/th&gt;'+
+                '&lt;th&gt;二&lt;/th&gt;'+
+                '&lt;th&gt;三&lt;/th&gt;'+
+                '&lt;th&gt;四&lt;/th&gt;'+
+                '&lt;th&gt;五&lt;/th&gt;'+
+                '&lt;th&gt;六&lt;/th&gt;'+
+                '&lt;th&gt;日&lt;/th&gt;'+
+            '&lt;/tr&gt;'+
+        '&lt;/thead&gt;'+
+        '&lt;tbody&gt;';
+    for(var i = 0; i &lt; monthData.days.length;i++){
+      var date = monthData.days[i];
+      if(i%7 === 0){
+        html += '&lt;tr&gt;';   //遍历数组，以7为一个单位展示数据
+      }
+      html +='&lt;td&gt;' + date.showDate + '&lt;/td&gt;';
+        if(i%7 === 6){
+          html +='&lt;/tr&gt;';
+        }
+    }
+    html +='&lt;/tbody&gt;'+
+        '&lt;/table&gt;';
+      </pre>
+<p>视图层已经建立起来了，接下来是渲染</p>
+<h3>render方法</h3>
+<pre>var year,month;
+       if (monthData) {
+          year = monthData.year;
+          month = monthData.month;
+       }
+       if (direction === 'prev') {month--}
+       if (direction === 'next') {month++}
+        var html = this.buildUI(year,month); //在需要渲染的时候建立视图层并返回数据
+        $wrapper=document.querySelector('.ui-datepicker-wrapper');
+
+        if(!$wrapper){
+            $wrapper = document.createElement('div');
+            $wrapper.className = 'ui-datepicker-wrapper';
+        }
+
+        $wrapper.innerHTML = html;//渲染，呈现视图
+        document.body.appendChild($wrapper);</pre>
+<h3>init方法</h3>
+<p>在init里，主要是执行渲染操作，绑定事件，代码如下:</p>
+<pre>this.render();
+       var $input = document.querySelector($input);
+               var isOpen = false;
+        $input.addEventListener('click',function(){
+            if(isOpen){
+                $wrapper.classList.remove('ui-datepicker-wrapper-show');
+                isOpen = false;
+            }else{
+                $wrapper.classList.add('ui-datepicker-wrapper-show');
+                var left = $input.offsetLeft;
+                var top = $input.offsetTop;
+                var height = $input.offsetHeight;
+                $wrapper.style.top = top + height + 2 + 'px';
+                $wrapper.style.left = left + 'px';
+                isOpen = true;
+            }
+        },false);
+        var that = this;
+        $wrapper.addEventListener('click',function(e){
+            var $target = e.target;
+            if (!$target.classList.contains('ui-datepicker-btn')) {
+                return false;
+            }
+
+            if ($target.classList.contains('ui-datepicker-prev-btn')) {
+                that.render('prev');
+            }else if ($target.classList.contains('ui-datepicker-next-btn')) {
+                that.render('next');    
+            }
+            },false);
+
+        $wrapper.addEventListener('click',function(e){
+            var $target = e.target;
+
+            if ($target.tagName.toLocaleLowerCase()!=='td') {
+                return false;
+            }
+
+            var date = new Date(monthData.year, monthData.month-1, $target.dataset.date);
+           
+            $input.value = format(date);
+
+            $wrapper.classList.remove('ui-datepicker-wrapper-show');
+            isOpen = false;
+        },false);</pre>
+<p>插件里这段代码其实并不起眼，主要是计算逻辑，获取字符串，渲染视图，初始化方法的里，很符合js的直觉，值得借鉴。</p>
+	</div>
+  </div>
+  </div>
+	<script type="text/javascript" src="../../js/public.js"></script>
+  <script type="text/javascript" src="../../js/progress.js"></script>
+</body>
+</html>

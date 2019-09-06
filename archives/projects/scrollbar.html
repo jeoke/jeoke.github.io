@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>自定义滚动条的开发</title>
+  <meta name="keywords" content="自定义滚动条，响应式的自定义滚动条，优化页面体验"/>
+  <meta name="description" content="JavaScript实现的自定义滚动条，优化用户体验的工具，值得实现的前端轮子"/>
+
+	<link rel="stylesheet" type="text/css" href="../../css/public/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="../../css/public/nav.css">
+  <link rel="shortcut icon" href="../../img/avitar.png" type="image/ico">
+  <link rel="icon" sizes="192x192" href="../../img/avitar.png">
+  <link rel="apple-touch-icon" href="../../img/avitar.png">
+</head>
+<body>
+    <div class="nav-onOff nav-in">
+	 <button type="button" class="btn btn-default" aria-label="Left Align">
+       <span class="glyphicon glyphicon-align-left" aria-hidden="true"></span>
+       </button>
+    </div>
+	<div class="wrapper wrapper-animate">
+    <div class="nav-message">
+      	<nav class="nav nav-animate">
+        <img src="../../img/avitar.png">
+            <button type="button" class="btn btn-default nav-right" aria-label="Left Align" >
+            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+            </button>
+        <ul class="list-group list-gap ">
+            <li type="button" class="list-group-item">
+               <a href="../../page/classify.html">文章分类<span class="badge">4</span></a>
+            </li>
+            <li type="button" class="list-group-item">
+               <a href="../../index.html"><span class="badge"></span>
+               实践列表</a>
+            </li>
+            <li type="button" class="list-group-item">
+               <a href="../../page/foundation.html"><span class="badge"></span>
+               基础知识</a>
+            </li>
+            <li type="button" class="list-group-item">
+               <span class="badge"></span>
+               进阶方向  ---待更新
+            </li>
+            <li type="button" class="list-group-item">
+               <span class="badge"></span>
+               node篇  ---待更新
+            </li>
+            <li type="button" class="list-group-item">
+               <span class="badge"></span>
+               其余工具分析篇  ---待更新
+            </li>
+        </ul>
+	    </nav>
+	</div>
+	</div>
+
+		<div class="progress rotate fiexd-pos">
+         <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45"      aria-valuemin="0" aria-valuemax="100" style="width: 0%">     
+            <span class="sr-only">阅读 100%</span>
+         </div>
+        </div>
+<div class="container">
+<div class="container box-shadow">
+<div class="scrollPos">
+<h1>滚动条开发分析</h1>
+<h2>为什么要进行滚动条的开发？</h2>
+<p>一是因为浏览器滚动条太丑，二是因为css写滚动条样式有兼容性的问题</p>
+<p>滚动条是优化用户体验的一个重要功能，在普通界面里，滚动条的写法练习，也是提高js水准的一个很好的练习</p>
+<p>首先进行滚动条开发的分析</p>
+<h3>滚动条分析</h3>
+<p><strong>滚动条的高度/页面容器高度 = 页面容器/内容高度</strong></p>
+<p><strong>滚动的距离/页面容器高度 = 页面滚动距离/内容高度</strong></p>
+<p>以下是滚动条的逻辑</p>
+<h4>初始化滚动条</h4>
+<p>根据页面容器高度和内容高度初始化滚动条</p>
+<pre>function client(){   //这段部分是客户端检测，因为opera浏览器
+  var engine = {
+    opera : 0,
+    ver : null
+  }
+  if(window.opera){
+        engine.ver = window.opera.version();
+        engine.opera = parseFloat(engine.ver);
+  }
+  return {
+    engine:engine
+  }
+}
+var scrollBar = document.getElementsByClassName('scrollBar')[0];
+var contentEle = document.getElementById('modules');
+var wrapper = document.getElementById('wrapper');
+var wrapperW = wrapper.offsetHeight;
+
+function initScroll(){
+  var scrollBarOfHeight = scrollBar.offsetHeight;
+  var contentH = contentEle.offsetHeight;
+  var scrollTop = scrollBar.offsetTop;
+  wrapperW = wrapperW;
+    var wrapperH = wrapper.offsetHeight; 
+    scrollBarHeightValue = wrapperH*wrapperH/contentH;
+    if(scrollBarOfHeight && scrollBarOfHeight !== 0){
+        scrollBarTopValue = scrollTop*Math.ceil(wrapperH/wrapperW*100)/100;
+        if(scrollBarTopValue + scrollBarHeightValue < wrapperH){
+          scrollBar.style.height = wrapperH*wrapperH/contentH + 'px';
+          scrollBar.style.top = scrollBarTopValue + 'px';
+        }else{                                           //调整滚动条，在滚动条加TOP超出容器高度时
+            scrollBar.style.height = wrapperH*wrapperH/contentH + 'px';
+            scrollBar.style.top = wrapperH - scrollBar.offsetHeight + 'px';
+        }
+      contentEle.style.top = '-'+scrollBar.offsetTop/wrapperH*contentH + 'px';
+      wrapperW = wrapperH;
+    }else{
+       scrollBar.style.height = wrapperH*wrapperH/contentH + 'px';   //初始化滚动条
+         scrollBar.style.top = 0 + 'px';
+         contentEle.style.top = 0 + 'px';
+    }
+
+}
+initScroll();
+window.addEventListener('resize', initScroll, false);
+</pre>
+<p><strong>踩坑:</strong>注意以上注释部分</p>
+<h4>滚轮滚轮的实现</h4>
+<p>将滚动条上下滚动逻辑分离开,更有条理感</p>
+<pre>function prescroll(wrapperH,contentH){
+    if(scrollBar.offsetTop <= 10){
+       scrollBar.style.top = 0 + 'px';
+       contentEle.style.top = 0 + 'px';
+    }else{
+       scrollBar.style.top = scrollBar.offsetTop - 10 + 'px';
+       contentEle.style.top = '-' + scrollBar.offsetTop/wrapperH*contentH + 'px';
+    }
+}
+
+function nextScroll(wrapperH,contentH){
+  if ( wrapperH-scrollBar.offsetHeight-10 <= scrollBar.offsetTop &&  scrollBar.offsetTop<= wrapperH-scrollBar.offsetHeight) {
+       scrollBar.style.top = wrapperH-scrollBar.offsetHeight + 'px';
+     contentEle.style.top = '-' + (wrapperH-scrollBar.offsetHeight)/wrapperH*contentH + 'px';
+  }else{
+       scrollBar.style.top = parseInt(scrollBar.offsetTop) + 10 + 'px';
+     contentEle.style.top = '-' + parseInt(scrollBar.offsetTop)/wrapperH*contentH + 'px';
+  }
+}
+
+
+function scrollContent (ele,e) {
+  e.preventDefault();
+  var wheelDeltaData;
+  var contentH = contentEle.offsetHeight;
+    var wrapperH = wrapper.offsetHeight;
+  if (e.wheelDelta) {
+       wheelDeltaData = (client().engine.opera && client().engine.opera>9.5)? -e.wheelDelta : e.wheelDelta;
+  }else{
+    wheelDeltaData = -e.detail*40;
+  }
+
+    if(wheelDeltaData > 0){
+      prescroll(wrapperH,contentH);
+    }else{
+      nextScroll(wrapperH,contentH);
+    }
+
+}</pre>
+<p>以上是滚轮的兼容和一般实现，这种模式一般滚轮的实现都会使用到</p>
+<h4>拖拽功能的实现</h4>
+<p>由于涉及的判断与计算太多，主要是在调试过程种不断调整的,就不继续分析滚动条的精度判断问题，有兴趣的可以实现一下</p>
+<pre>var isdragging = false;
+var diff;
+var wrapperH;
+var contentH;
+var clientYValue;
+var newDiff;
+
+function dragStart(e){
+  e.preventDefault()
+    isdragging = true;
+    clientYValue = e.clientY;
+    wrapperH = wrapper.offsetHeight;
+    contentH = contentEle.offsetHeight;
+    diff = e.clientY - this.offsetTop;
+    console.log(diff);
+}
+
+function dragging(e){
+    e.preventDefault();
+    if(clientYValue){
+      newDiff = e.clientY - clientYValue;     
+    }
+    //由于拖拽的精度问题，需要判断的条件较多，这里newdiff可以直接让Diff直接改到dragging里
+    if(((newDiff > 0 && this.offsetTop<=0) ||(newDiff<0 && this.offsetTop + this.offsetHeight >= wrapperH) || (this.offsetTop + this.offsetHeight < wrapperH && this.offsetTop >= 0)) && isdragging === true){
+      isdragging = true;
+    }else{
+      isdragging = false;
+    }
+    if(newDiff<0 && this.offsetTop + this.offsetHeight >= wrapperH && isdragging){
+        this.style.top = this.offsetTop + newDiff + 'px'; 
+        contentEle.style.top = '-' + parseInt(scrollBar.offsetTop)/wrapperH*contentH + 'px';
+    }else if ( wrapperH-scrollBar.offsetHeight-10 <= scrollBar.offsetTop &&  scrollBar.offsetTop<= wrapperH-scrollBar.offsetHeight && newDiff>0) {  //精度问题
+       scrollBar.style.top = wrapperH-scrollBar.offsetHeight + 'px';
+       contentEle.style.top = '-'+Math.floor(scrollBar.offsetTop/wrapperH*contentH) + 'px';
+  }else if (isdragging) {
+    if(this.offsetTop+newDiff<0){   //精度问题
+       this.style.top = 'px';
+       contentEle.style.top = '0px';
+    }else if(this.offsetTop + newDiff + this.offsetHeight > wrapperH){
+        this.style.top = wrapperH-scrollBar.offsetHeight + 'px'; 
+          contentEle.style.top = '-'+Math.floor(scrollBar.offsetTop/wrapperH*contentH) + 'px';  
+    }else{
+      this.style.top = this.offsetTop+newDiff+'px';
+      contentEle.style.top = '-'+Math.floor(scrollBar.offsetTop/wrapperH*contentH) + 'px';
+    }
+    }
+    clientYValue = e.clientY;
+}
+
+function dragEnd(){
+     isdragging = false;
+     removeEventListener('mousedown', dragStart, false);
+     removeEventListener('mousemove', dragging, false);
+}</pre>
+<p><strong>问题：</strong>滚动条实现对浏览器重排的影响较大,也需要谨慎使用</p>
+	</div>
+  </div>
+  </div>
+	<script type="text/javascript" src="../../js/public.js"></script>
+  <script type="text/javascript" src="../../js/progress.js"></script>
+</body>
+</html>

@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>vue响应式原理和指令实现</title>
+  <meta name="keywords" content="vue响应式的实现和原理，vue指令解析，观察者模式"/>
+  <meta name="description" content="vue实现原理不只Obeject.defineProperty最基本的原理实现，还包括vue指令解析的内容讲解"/>
+	<link rel="stylesheet" type="text/css" href="../../css/public/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="../../css/public/nav.css">
+  <link rel="shortcut icon" href="../../img/avitar.png" type="image/ico">
+  <link rel="icon" sizes="192x192" href="../../img/avitar.png">
+  <link rel="apple-touch-icon" href="../../img/avitar.png">
+</head>
+<body>
+    <div class="nav-onOff nav-in">
+	 <button type="button" class="btn btn-default" aria-label="Left Align">
+       <span class="glyphicon glyphicon-align-left" aria-hidden="true"></span>
+       </button>
+    </div>
+	<div class="wrapper wrapper-animate">
+    <div class="nav-message">
+      	<nav class="nav nav-animate">
+        <img src="../../img/avitar.png">
+            <button type="button" class="btn btn-default nav-right" aria-label="Left Align" >
+            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+            </button>
+        <ul class="list-group list-gap ">
+            <li type="button" class="list-group-item">
+               <a href="../../page/classify.html">文章分类<span class="badge">4</span></a>
+            </li>
+            <li type="button" class="list-group-item">
+               <a href="../../index.html"><span class="badge"></span>
+               实践列表</a>
+            </li>
+            <li type="button" class="list-group-item">
+               <a href="../../page/foundation.html"><span class="badge"></span>
+               基础知识</a>
+            </li>
+            <li type="button" class="list-group-item">
+               <span class="badge"></span>
+               进阶方向  ---待更新
+            </li>
+            <li type="button" class="list-group-item">
+               <span class="badge"></span>
+               node篇  ---待更新
+            </li>
+            <li type="button" class="list-group-item">
+               <span class="badge"></span>
+               其余工具分析篇  ---待更新
+            </li>
+        </ul>
+	    </nav>
+	</div>
+	</div>
+
+		<div class="progress rotate fiexd-pos">
+         <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45"      aria-valuemin="0" aria-valuemax="100" style="width: 0%">     
+            <span class="sr-only">阅读 100%</span>
+         </div>
+        </div>
+<div class="container">
+<div class="container box-shadow">
+<div class="scrollPos">
+<h1><strong>vue响应式原理和指令实现</strong></h1>
+<h2>vue响应式原理</h2>
+<p>关于Object.defineProperty</p>
+<p>给对象添加属性是如何实现的</p>
+<p>如以下代码</p>
+<pre>var b = {};
+b.a = "v";
+</pre>
+<p>以上这段代码在实现的过程中经历了如下阶段</p>
+<pre>var Value;
+Object.defineProperty(b,'a',{
+    enumerable: true,
+    configurable:true,
+    get:function() {
+      console.log(Value)
+      return Value;
+    },
+    set:function(newValue){
+      Value = newValue;
+    }
+});
+});
+</pre>
+<p>这个方法就相当于一个观察者，监听了属性值的存取</p>
+<p>如果 结合 DOM节点和事件监听经典的发布订阅模式，就可以实现根据对象来改变视图了,简单的代码如下：</p>
+<pre>var input = document.getElementById('in');
+var out = document.getElementById('out');
+var obj = {};
+var Value;
+Object.defineProperty(obj, 'msg', {
+  enumerable: true,
+  configurable:true,
+  get:function() {
+    console.log(Value)
+    return Value;
+  },
+  set:function(newValue){
+    out.innerHTML = newValue;
+    Value = newValue;
+  }
+});
+
+input.addEventListener('input', function(e){
+  obj.msg = e.target.value;
+  console.log(obj.msg)
+}, false);</pre>
+<p>当然，原理就是这样，但是事实上vue的实现肯定不会这么肤浅</p>
+<p>先从一个Vue对象来说起，由于这篇文章只涉及data的响应式，methods方法,所以vue对象只实现data,methods</p>
+<pre>
+new Vue({
+  el:'#app',
+  data:{
+    title:'hello world',
+    name: 'ccc'
+  },
+  methods: {
+    clickMe:function(){
+      this.title = 'ssss';
+      console.log(this)
+    }
+  }
+})
+</pre>
+<p>首先,声明一个Vue对象的构造函数，获取Vue对象的参数</p>
+<pre>function Vue(options){
+  var self = this;
+  this.data = options.data;
+  this.methods = options.methods;
+    if(options.mounted){
+      options.mounted.call(this);   //vue对象挂载的方法
+    } 
+}
+</pre>
+<p>数据已经获取完毕，首先是实现数据的响应式更改，首先要获取data所有的键，实现数据的存取</p>
+<pre>Vue.prototype = {
+  proxyKeys: function(key){
+    var self = this;
+    Object.defineProperty(this,key, {
+      enumerable:false,
+      configurable:true,
+      get:function(){
+        return self.data[key];
+      },
+      set:function(newValue){
+        self.data[key] = newValue;
+      }
+    })
+  }
+}
+
+function Vue(options){
+  var self = this;
+  this.data = options.data;
+  this.methods = options.methods;
+  if(this.data instanceof Object){
+      Object.keys(this.data).forEach(function(key) {
+        self.proxyKeys(key);    //每次设置的时候，初始化
+      });
+  }else {
+    console.error('data不是对象');
+  }
+  
+    observe(this.data);   //观察者
+    if(options.mounted){
+      options.mounted.call(this); 
+    } 
+}  
+</pre>
+<p>下面是观察者的实现。实现观察者首先要明确的问题是，如何在值改变的时候通知所有的组件，答案是收集所有的订阅者</p>
+<pre>function observe(data){
+  if(!data || typeof data !== 'object'){
+    return;
+  }
+
+  Object.keys(data).forEach(function(key){
+    defineReactive(data,key,data[key]);
+  });
+}
+
+function defineReactive(data,key,val){
+  observe(val);    //避免身处对象嵌套
+  var dep = new Dep();//订阅器，收集每个组件的定阅,
+  Object.defineProperty(data, key, {
+    enumerable : true,
+    configurable : true,
+    get: function(){
+      if(Dep.target){  //订阅者存在
+                dep.addSub(Dep.target);
+      }
+      return val;
+    },
+    set: function(newVal){
+      if(val === newVal){ //不必频繁更新
+        return;
+      }
+      val = newVal;    
+      dep.notify(); //有变动通知订阅者更新，
+      console.log('属性'+key+'已经被监听，观察者已经监听了data的所有属性')
+    }
+  })
+}
+
+//观察者有了，剩下需要 消息订阅器，为收集发布者的订阅
+function Dep(){
+  this.subs = [];
+}
+Dep.prototype = {
+  constructor: Dep,
+  addSub: function(sub){
+    this.subs.push(sub);
+  },
+  notify: function(){
+    console.log(this.subs);
+    this.subs.forEach(function(sub){
+      sub.update();   //定阅者更新
+    });
+  }
+};
+Dep.target = null;
+</pre>
+<p>其次要明确的是，观察者是观察者，并不能自动更新，所以只能让观察者自动更新</p>
+<pre>//订阅者
+function Watcher(vm,exp,callback){
+  this.callback = callback;
+  this.vm = vm;
+  this.exp = exp;
+  this.value = this.get(); //触发订阅者的初始化，赋值调用自动更新
+}                                                     |
+                                                      |
+Watcher.prototype = {                                 |
+  constructor: Watcher,                               |
+  update:function(){                                  |
+    this.run();                                       |
+  },                                                  |
+  run:function(){                                     |
+    var value = this.vm.data[this.exp];               |
+    var oldVal = this.value;                          |
+    if(value !== oldVal){                             |
+      this.value = value;                             |
+      this.callback.call(this.vm,value,oldVal);       |
+    }                                                 |
+  },                                                  |
+  get:function(){                                     |
+    Dep.target = this; //将订阅者添加到订阅器中         |  在获取值的时候会把自身添加到订阅器
+    var value = this.vm.data[this.exp]; //执行观察者的观察,并初始化自身
+    console.log(this);
+    Dep.target = null; //清除闭包缓存的变量
+    return value;      //缓存状态
+  }
+}
+</pre>
+<p>逻辑完成了，但是我们怎么获取vue里的{{}}模板的数据呢，和实例化订阅者呢</p>
+<p>肯定是在解析模板或者指令的时候，实例化订阅者并设置视图的值，并且同时将此订阅者加到观察者的依赖里</p>
+<p>那么在vue对象实例化的时候就需要解析</p>
+<pre>function Vue(options){
+  var self = this;
+  this.data = options.data;
+  this.methods = options.methods;
+  if(this.data instanceof Object){
+        Object.keys(this.data).forEach( function(key) {
+      self.proxyKeys(key);
+      });
+  }else {
+    console.error('data不是对象');
+  }
+  
+    observe(this.data);
+    new Compile(options.el,this); //传入节点和vue对象，一边获取data属性
+    if(options.mounted){
+      options.mounted.call(this); 
+    } 
+}
+</pre>
+<p>接下来就需要实现解析的方法了</p>
+<pre>function Compile(el,vm){
+  this.vm = vm;
+  this.el = document.querySelector(el);
+  this.fragment = null;  //初始化就必须要获取该绑定vue对象的DOM片段，解析指令，更改DOm片段添加到真实的节点上
+  this.init();     
+}</pre>
+<p>由于初始化是所有Vue对象都会new一个Cimpile,所以相应的方法需要实现到Compile的原型链上</p>
+<pre>Compile.prototype = {
+  init: function(){
+    if(this.el){
+      this.fragment = this.nodeToFragment(this.el);  //遍历元素
+      this.compileElement(this.fragment);            //解析并改变DOM
+      this.el.appendChild(this.fragment);
+    }else{
+      return;
+    }
+  },
+
+  nodeToFragment: function(el){
+      var fragment = document.createDocumentFragment();
+      var child = el.firstChild;
+      while (child) {
+        fragment.appendChild(child);
+        child = el.firstChild;
+        console.log(child);
+      }
+      return fragment;
+  },
+
+    compileElement: function(el){         //解析元素
+    var childNodes = el.childNodes;
+      var self = this;
+      [].slice.call(childNodes).forEach( function(node) {   //注意:childNodes为类数组需要经过转换
+        var reg = /\{\{(.*)\}\}/;
+        var text = node.textContent;   //获取DOM
+        if(self.isElementNode(node)){  //元素节点，解析指令
+          self.compileDirective(node);
+        }
+        if (self.isTextNode(node) && reg.test(text)) {  //文本节点
+          console.log(text);
+          console.log(reg.exec(text));
+          self.compileText(node,reg.exec(text)[1]);    //解析文本
+        }
+        if (node.childNodes && node.childNodes.length) {   //类数组，递归调用
+          self.compileElement(node);
+        }
+      }); 
+  },
+
+  compileText: function(node,exp){
+    var self = this;
+      var initText = this.vm.data[exp];
+      self.updateText(node,initText); //更新视图
+      new Watcher(this.vm,exp,function(value){ //生成定阅者并更新
+        self.updateText(node,value);           //监听更新
+      });
+  },
+
+  updateText: function(node,value){
+    node.textContent = typeof value == 'undefined'? '': value;
+  },
+
+  isTextNode: function(node){
+    return node.nodeType === 3;
+  },
+
+  compileDirective: function(node){
+    var nodeAttrs = node.attributes;
+    var self = this;
+    Array.prototype.forEach.call(nodeAttrs,function(attr){
+      var attrName = attr.name;
+      if(self.isDirective(attrName)){
+        var exp = attr.value;
+        var dir = attrName.substring(2);
+        if(self.isEventDirective(dir)){ //事件指令
+          self.compileEvent(node,self.vm,exp,dir);
+        }else{
+          self.compileModel(node,self.vm,exp,dir);
+        }
+        node.removeAttribute(attrName);
+      }
+    });
+  },
+  compileEvent: function(node,vm,exp,dir){
+    var eventType = dir.split(':')[1];
+    var callback = vm.methods && vm.methods[exp];
+    if(eventType && callback){
+       node.addEventListener(eventType, callback.bind(vm.data), false);
+    }
+  },
+  compileModel: function(node,vm,exp,dir){
+    var self = this;
+    var val = this.vm[exp];
+    console.log(val);
+    this.modelUpdater(node,val);
+    new Watcher(this.vm,exp,function(value){
+      self.modelUpdater(node,value);
+    });
+
+    node.addEventListener('input', function(e){
+      var newValue = e.target.value;
+      if (val === newValue) {
+        return;
+      }
+      self.vm.data[exp] = newValue;
+      val = newValue;
+    }, false);
+  },
+
+  modelUpdater: function(node,value,oldValue){
+    node.value = typeof value == 'undefined'?'':value;
+  },
+  isDirective: function(attr){
+    return attr.indexOf('v-') === 0;
+  },
+  isEventDirective: function(dir){
+    return dir.indexOf('on:') === 0;
+  },
+  isElementNode:function(node){
+    return node.nodeType === 1;
+  }
+}
+</pre>
+<p>由于解析指令的逻辑并不复杂，是很容易理解的，只着重强调几点：Vue的虚拟DOM是算法层的，这里只用了循环了递归替代，指令的解析式基于匹配和查找标识符</p>
+</div>
+  </div>
+  </div>
+	<script type="text/javascript" src="../../js/public.js"></script>
+  <script type="text/javascript" src="../../js/progress.js"></script>
+</body>
+</html>

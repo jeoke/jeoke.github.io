@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>socket.io即时通讯的功能实现</title>
+  <meta name="keywords" content="socket.io即时通讯，node.js后端处理，javascript即时通讯逻辑"/>
+  <meta name="description" content="网页即时通讯实现的基本思路，node后端处理简单的逻辑，jquery和socket.io实现即时通讯的总结"/>
+	<link rel="stylesheet" type="text/css" href="../../css/public/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="../../css/public/nav.css">
+  <link rel="shortcut icon" href="../../img/avitar.png" type="image/ico">
+  <link rel="icon" sizes="192x192" href="../../img/avitar.png">
+  <link rel="apple-touch-icon" href="../../img/avitar.png">
+</head>
+<body>
+    <div class="nav-onOff nav-in">
+	 <button type="button" class="btn btn-default" aria-label="Left Align">
+       <span class="glyphicon glyphicon-align-left" aria-hidden="true"></span>
+       </button>
+    </div>
+	<div class="wrapper wrapper-animate">
+    <div class="nav-message">
+      	<nav class="nav nav-animate">
+        <img src="../../img/avitar.png">
+            <button type="button" class="btn btn-default nav-right" aria-label="Left Align" >
+            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+            </button>
+        <ul class="list-group list-gap ">
+            <li type="button" class="list-group-item">
+               <a href="../../page/classify.html">文章分类<span class="badge">4</span></a>
+            </li>
+            <li type="button" class="list-group-item">
+               <a href="../../index.html"><span class="badge"></span>
+               实践列表</a>
+            </li>
+            <li type="button" class="list-group-item">
+               <a href="../../page/foundation.html"><span class="badge"></span>
+               基础知识</a>
+            </li>
+            <li type="button" class="list-group-item">
+               <span class="badge"></span>
+               进阶方向  ---待更新
+            </li>
+            <li type="button" class="list-group-item">
+               <span class="badge"></span>
+               node篇  ---待更新
+            </li>
+            <li type="button" class="list-group-item">
+               <span class="badge"></span>
+               其余工具分析篇  ---待更新
+            </li>
+        </ul>
+	    </nav>
+	</div>
+	</div>
+
+		<div class="progress rotate fiexd-pos">
+         <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45"      aria-valuemin="0" aria-valuemax="100" style="width: 0%">     
+            <span class="sr-only">阅读 100%</span>
+         </div>
+        </div>
+<div class="container">
+<div class="container box-shadow">
+<div class="scrollPos">
+<h1><strong>聊天室实现</strong></h1>
+<h2>效果展示</h2>
+<img src="./img/socket.gif" width="620" height="440" style="margin-left: 20%">
+<p>https://socket.io/ 这是soket.io的官网</p>
+<p>即时通讯的原理是在浏览器不支持websocket通信协议时，将其转化为长轮询</p>
+<p>该库定义了即时通讯实现的逻辑</p>
+<pre>//服务端引用
+var socketio = require('socket.io');
+//客户端引用
+<script src="/socket.io/socket.io.js"></script>
+</pre>
+<p>服务端通信</p>
+<pre>let serverSocket = http.Server(app); //这里的app,是webpack内部express封装的接口,express()
+//改写为node如下
+serverSocket = require('http').createServer(app);
+chatServer.listen(serverSocket); 
+serverSocket.listen(3000);</pre>
+<p>服务端首先是要监听连接</p>
+<pre>io.on('connection',function (socket) {
+  ....... //这里是处理连接之后的所有逻辑
+})</pre>
+<p>当然这处理的只是只是单个页面的即一个房间的所有用户</p>
+<pre>io.of('/admin').on('connect', (socket) => {
+  // .....这是处理多页面的逻辑            
+});</pre>
+<p>但是单页面可以处理简单的多页面逻辑，上面效果实现的就是使用单页面实现多房间的连接</p>
+<p>处理信息的发送和监听的逻辑</p>
+<pre>
+    socket.on('add user',function (data) {
+      if (addedUser) {
+        return false;
+      }
+        console.log(data.username);
+      socket.username = data.username;
+      ++numUsers;
+      p_roomname.default = numUsers;
+      addedUser = true;
+      socket.emit('login',{
+        username:socket.username,
+        currentRoom:data.currentRoom,
+        currentNumer:numUsers
+      });
+
+      socket.broadcast.emit('user joined', {
+      username:socket.username,
+      currentRoom:data.currentRoom,  
+      currentNumer:numUsers
+      });
+    });
+//以上是服务端的处理
+//以下是客户端的处理
+     var socket = io();
+      if (username) {
+             $('.login.page').fadeOut();
+             $('.chat.page').show();
+             $('.login.page').off('click');
+             $currentInput = $('.inputMessage').focus();
+             //Tell the server your username;
+             socket.emit('add user',{
+                 username:username,
+                 currentRoom:currentRoom
+             });
+        }
+
+        socket.on('login',function(data){
+        connected =true;
+        if (data.currentRoom = currentRoom) {
+          var message = 'welcome to chat';
+              currentNumer = data.currenNumer;
+          log(message,{
+              prepend:true
+             });
+          log(data.username + '  joined');
+          addParticipantsMessage(data);
+        }else{
+          return false;
+        }
+    });
+</pre>
+<p>服务端socket.emit()是向所有连接的客户端发送信息</p>
+<p>socket.on()是服务端监听emit发送过来的信息</p>
+<p>socket.broadcast.emit()是向除了发送信息过来的所有客户端发送信息</p>
+<p>不过它们后面都有监听或触发的事件字段'user joined'等，只有相同的才能触发或者监听</p>
+<P>另外在它们的ON监听事件的回调函数里，可以再回传消息。</P>
+<p>这样的模式就实现了客户端和服务端信息即时更新</p>
+<P>由于以上的是的数据是存储在了内存中，在连接过多的时候会拖慢服务端的逻辑处理的性能</p>
+<p>所以在连接的时候可以使用数据库或者读取文件或者写入</P>
+<p>其余的逻辑,都是Jquery根据判断，交互的事件信息对DOM操作的逻辑,由于Jquery的语法非常直观就不赘述</p>
+<p>有兴趣的可以去看看https://github.com/jeoke/socket.io-ugly-chat/tree/master/websocket，这里是源代码</p>
+<p>这里提几个有趣的知识：</p>
+<pre>  const getUsernameColor = (username) => {
+    var hash = 7;
+    for (var i = 0; i < username.length; i++) {
+       hash = username.charCodeAt(i) + (hash << 5) - hash; //这里的名字的hash值操作
+       //将hash值的二进制码左移5位，将值放大，最低32不超过64倍。
+    }
+    var index = Math.abs(hash % COLORS.length);
+    return COLORS[index];
+  }</pre>
+<p>还有css的border-sizing:border-box,这个时候直接给宽度，和边界，浏览器会自动计算内容宽度，</p>
+</div>
+  </div>
+  </div>
+	<script type="text/javascript" src="../../js/public.js"></script>
+  <script type="text/javascript" src="../../js/progress.js"></script>
+</body>
+</html>

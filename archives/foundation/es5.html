@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>javascript基础核心的介绍</title>
+  <meta name="keywords" content="javascript的核心特性，JavaScript需要掌握的理论知识，怼面试官的知识"/>
+  <meta name="description" content="包括javascript闭包，继承，语法设计，类型的实现，综合去理解javascript,只是为了以后能够走的更远"/>
+
+	<link rel="stylesheet" type="text/css" href="../../css/public/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="../../css/public/nav.css">
+  <link rel="shortcut icon" href="../../img/avitar.png" type="image/ico">
+  <link rel="icon" sizes="192x192" href="../../img/avitar.png">
+  <link rel="apple-touch-icon" href="../../img/avitar.png">
+</head>
+<body>
+    <div class="nav-onOff nav-in">
+	 <button type="button" class="btn btn-default" aria-label="Left Align">
+       <span class="glyphicon glyphicon-align-left" aria-hidden="true"></span>
+       </button>
+    </div>
+	<div class="wrapper wrapper-animate">
+    <div class="nav-message">
+      	<nav class="nav nav-animate">
+        <img src="../../img/avitar.png">
+            <button type="button" class="btn btn-default nav-right" aria-label="Left Align" >
+            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+            </button>
+        <ul class="list-group list-gap ">
+            <li type="button" class="list-group-item">
+               <a href="../../page/classify.html">文章分类<span class="badge">4</span></a>
+            </li>
+            <li type="button" class="list-group-item">
+               <a href="../../index.html"><span class="badge"></span>
+               实践列表</a>
+            </li>
+            <li type="button" class="list-group-item">
+               <a href="../../page/foundation.html"><span class="badge"></span>
+               基础知识</a>
+            </li>
+            <li type="button" class="list-group-item">
+               <span class="badge"></span>
+               进阶方向  ---待更新
+            </li>
+            <li type="button" class="list-group-item">
+               <span class="badge"></span>
+               node篇  ---待更新
+            </li>
+            <li type="button" class="list-group-item">
+               <span class="badge"></span>
+               其余工具分析篇  ---待更新
+            </li>
+        </ul>
+	    </nav>
+	</div>
+	</div>
+
+		<div class="progress rotate fiexd-pos">
+         <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45"      aria-valuemin="0" aria-valuemax="100" style="width: 0%">     
+            <span class="sr-only">阅读 100%</span>
+         </div>
+        </div>
+<div class="container">
+<div class="container box-shadow">
+<div class="scrollPos">
+<h1><strong>javascript基础</strong></h1>
+<h2>JavaScript概述</h2>
+<p>JavaScript最初的定义是：控制浏览器用户行为对页面内容的影响。</p>
+<p>虽然由于javascript语言生态的发展，逐渐因为不同的应用方向，不同的技术实现造成了这门语言的繁杂内容，但是它的核心都是：</p>
+<ul>
+  <li>javascript Core</li>
+  <li>BOM</li>
+  <li>DOM</li>
+</ul>
+<p>由于这是总结性的文章，就不赘述API和参数还有兼容性了，只分析，JavaScript这门语言操作的对象和它的特性</p>
+<h2>javascript core</h2>
+<p>首先是数据类型：</p>
+<p>javascript的数据类型分为基本类型和引用类型，但是它的核心是使用object类型实现的</p>
+<p>它的设计就导致了一个问题，<strong>弱类型</strong>，即类型之间可以相互转换</p>
+<p>null是一个空对象指针</p>
+<h3>基本类型的实现</h3>
+<p>比如String类型</p>
+<pre>
+function String(){};
+String.prototype = {
+   constructor: String
+  //在其中定义String的原型方法
+};
+//在执行时会实现这样的操作
+var s1 = new String('string');
+var s2= s1.substring(2);
+s1 = null;</pre>
+<p>至于这样的操作时如何在c++的js源码层面或者说解析是怎么实现。不重要，但是认识这一点很重要</p>
+<p><strong>注意：</strong>基本类型的赋值是可以改变的</p>
+<h3>引用类型的实现</h3>
+<p>引用类型是用Object实现的，都有一个特点：值是保存在内存里，将引用类型转复制，保存的只是对内存的引用</p>
+<pre>class JSArray: public JSObject {
+ public:
+  // [length]: The length property.
+  DECL_ACCESSORS(length, Object)
+
+  // Number of element slots to pre-allocate for an empty array.
+  static const int kPreallocatedArrayElements = 4;
+};</pre>
+<p>虽然它的实现于js无关，但是写JavaScript也是需要注意这一点，有助于使用原型链实现其他数据结构的思路</p>
+<h2>变量提升</h2>
+<p>JavaScript是一门解释型语言，但是对javascript解释的实现还有许多反直觉内容。值得注意</p>
+<p>其中之一变量，和函数提升</p>
+<pre>console.log(a,textVariable);
+var a = 2; 
+function textVariable(){    //function是函数变量声明标识符，后面是变量名
+  return "a";               //变量名不能够冲突
+}</pre>
+<p>在网上有关于变量提升还是函数提升在前，但是一般在使用时，这个是不重要，因为该语法实现的解释思路就注定了他们不会冲突，只要保持良好的习惯。这就涉及另外一个问题:词法作用域和执行环境，单线程</p>
+<p>所有的钻牛角尖都是舍本逐末</p>
+<h2>静态词法作用域，执行环境和单线程执行</h3>
+<pre>var scopeVariable = 'a'
+function textScope(){
+     this.func = function(){
+      console.log(scopeVariable);
+     };
+     return this.func;
+}
+function textfunScope(){
+  var scopeVariable = 'b';
+  textScope()();
+}
+textfunScope();    // a
+</pre>
+<p><strong>注意：</strong>函数，变量声明都在声明时的环境中，在单线程从上往执行时的执行环境不干涉他们在词法作用域的声明</p>
+<p>它的实现逻辑如下</p>
+<p>js代码在执行环境执行时，会创建变量对象的scope的作用域链，生成作用域链与标识符搜索与标识符声明的位置有关，与执行环境无关，即静态作用域。活动对象的初始对象只有arguments和this</p>
+<p><strong>注意，参数的隐式声明在活动对象内部，会导致与作用域上级环境的同名变量冲突</strong></p>
+<p>另外执行环境即函数执行的环境作用域</p>
+<h2>闭包</h2>
+<p>闭包的形成与变量的销毁有关</p>
+<pre>
+  function textScopeAgain () {
+  var scopeVariable = 'c';
+  function textfunScopeAgain(){
+    console.log(scopeVariable);
+  }
+  return textfunScopeAgain;
+}
+
+textScopeAgain()();
+</pre>
+<p>通俗的理解为 在一个函数里声明另外一个的函数，并引用在该函数里的变量</p>
+<p>那么就导致在外部函数执行时，内部函数还保存着对该函数内活动变量的引用，变量还在内存里。</p>
+<p>清理内存时可在执行完时手动清除，设置为null</p>
+<h3>类和对象</h3>
+<p>类是函数！可以用来生成对象！对象可以调用类的方法！</p>
+function TextClassExample(){   //首字母大小写只是为与一般function类型区分开来
+  this.name = 'jeoke';
+  this.init();
+} 
+textClass = new TextClassExample();
+console.log(textClass.name);
+<p>这里在new的时候，类会执行一遍，并将this赋给对象：如下</p>
+<pre>var obj = {};
+obj._proto_ = TextClassExample.prototype;
+obj = {
+};
+TextClassExample.apply(obj);
+textClass = obj;
+</pre>
+<p><strong>注意：</strong>_pro_是对象的属性，指向类的原型，这里的实现就是new的操作</p>
+<h2>继承</h2>
+<h3>原型链继承</h3>
+<p>在以上的介绍里可知，new的对象会共享原型的方法。这就是继承</p>
+<p>继承的作用是：共享方法</p>
+<pre>function TextPrototype(){
+  this.name = "keasiion";
+  this.age = 23;
+}
+TextPrototype.prototype.sayName = function(){ 
+    console.log(this.name)
+};
+var textPrototypeExample = new TextPrototype();
+textPrototypeExample.sayName();</pre>
+<p><strong>this指向</strong>this指向调用它的对象</p>
+<p>以上就是原型链的继承，可以不断生成对象，重写原型对象</p>
+<p>但是每种写法会产生不同的影响，这就有关于设计模式的内容，合适的写法最重要</p>
+<h3>另外的继承方法</h3>
+<pre>function SonType() {
+  this.name = "keasiion";
+  this.age = 22;
+}
+function FatherType(){
+  this.sex = "male";
+  this.age = 25;
+}
+
+FatherType.prototype.sayAge = function(){
+  console.log(this.age)
+};
+var fatherObject = new FatherType()
+SonType.prototype = fatherObject;
+SonType.prototype.constructor = SonType;</pre>
+<p>这就是基于原型链更深层次的继承</p>
+<h3>第三种继承</h3>
+<pre>function FathType(){            //函数没有必要复用
+  this.name = 'jeokaren'; 
+}
+function SonType () {
+  FathType.apply(this);              //子类可以向超类传递参数
+}
+var fatherObject = new FathType();
+var sonObject = new SonType();
+console.log(sonObject.name);</pre>
+<p>以上这种写法是不需要所有对象都继承的单独更改继承的方式</p>
+<p>一种值得借鉴的继承方式</p>
+<pre>function object(object) { 
+  function F(){
+    
+  }
+  F.prototype = object;    //可以添加自有方法,避免了继承对象创建多次，不必要的内容多次执行
+  return new F();
+}
+function sayNameJeoke(){
+  console.log(this.name);
+};
+function createObject(origin){
+  var F2 = object(origin);
+  
+  F2.sayNameJeoke=sayNameJeoke;   
+  return F2;
+}
+var newJ = createObject({name:'jeoke'});
+newJ.sayNameJeoke();
+</pre>
+<h2>BOM</h2>
+<p>BOM包括浏览器对象，分别有</p>
+<ul>
+  <li>window--js中的globe对象</li>
+  <li>location对象</li>
+  <li>navigator对象</li>
+  <li>screen对象</li>
+  <li>history对象</li>
+</ul>
+<p>知道了这些浏览器对象，然后可以在js调用他们的API进行一系列操作</p>
+<h2>DOM</h2>
+<p>由于DOM是由节点构成的，初学者以为js获取的是节点，可以进行直接操作，但是对于DOM返回的内容还需要有一定的认识，以保证程序能有正常的结果</p>
+<ul>
+  <li>node对象</li>
+  <li>NodeList --节点的类数组对象</li>
+  <li>HTMLCollection-DOM节点类型的集合。比如：document.getElementsByTagsName();document.forms;document.links;document.images;docuemnt.anchors;</li>
+  <li>NamedNodeMap --- attributes ---属性节点的集合</li>
+</ul>
+<p>以上是类数组对象，可以通过数组访问的方式保存对数组里对象的引用</p>
+<h2>事件机制</h2>
+<p>冒泡，捕获</p>
+<p>在IE浏览器里事件机制是在冒泡阶段发生的，而在浏览器执行事件的时候，会发生冒泡和捕获，还有执行阶段，但是一般执行阶段和冒泡阶段不明显</p>
+<p>js提供了addEventListener(),后面的参数提供了参数决定事件在哪个阶段发生</p>
+<pre>var outer = document.getElementById('outer');
+var middle = document.getElementById('middle');
+var inner = document.getElementById('inner');
+
+outer.addEventListener('click', function (event) {
+    console.log('outer-->事件捕获');
+    // 阻止事件捕获，内层不会再捕获到事件 // event.stopPropagation();
+}, true);
+middle.addEventListener('click', function (event) {
+    console.log('middle-->事件捕获');
+}, true);
+inner.addEventListener('click', function (event) {
+    console.log('inner-->事件捕获');
+}, true);
+inner.addEventListener('click', function (event) {
+    console.log('inner-->事件冒泡');
+}, false);
+middle.addEventListener('click', function (event) {
+    console.log('middle-->事件冒泡');
+    // 阻止事件冒泡，外层不会再捕获到事件 // event.stopPropagation();
+}, false);
+outer.addEventListener('click', function (event) {
+    console.log('outer-->事件冒泡');
+}, false)</pre>
+<p>以上是一段事件捕获和冒泡的测试，事实证明只有相同阶段绑定的事件会相互影响</p>
+<p>另外，IE只支持事件冒泡，并提供了attachEvent方法</p>
+<p>另外，还有一点，就是事件委托，当需要给特定批量HTML元素绑定事件时，可以用e.target.nodeValue判断事件目标，并绑定事件</p>
+<p>事件是js的基础，js刚开始的定位就是脚本语言，用来操作浏览器表现</p>
+<h2>览器运行机制和js运行机制</h2>
+<p><strong>需要注意以下几点</strong></p>
+<p>浏览器运行是计算机的一个进程，而浏览器的运行是多线程的；</p>
+<p>而js是单线程的是因为它是浏览器的线程之一</p>
+<p>浏览器的线程：</p>
+<ul>
+  <li>GUI 线程 --地址栏，前进栏，书签菜单等</li>
+  <li>浏览器引擎  --用户界面和呈现引擎之间的传送指令</li>
+  <li>呈现引擎 --显示请求的内容</li>
+  <li>网络， ---用于网络的调用 ，ajax</li>
+  <li>用户界面后端   --绘制窗口小部件</li>
+  <li>javascript解释器  --用和于解析和执行js</li>
+  <li>数据存储</li>
+</ul>
+<h2>线程机制，异步，队列</h2>
+<p>而js解释器是单线程的，但是可以调用其他线程来进行异步操作，而这些任务就被称为宏任务</p>
+<p>而js为了控制执行的代码，就有了一个任务队列</p>
+<p>setInterval和setTimeout只是在间隔多长事件进入任务队列的方法</p>
+<p>js在主线程执行时会检查任务队列，按顺序执行，如果队列不是空的，那主线程继续执行，进入任务队列的比如调用setTimeout等，为什么promise的回调函数是微任务，因为它使用setTimeout立即传入任务队列的，并在队列中新建了一个小队列</p>
+<p>所以是，主线程>promise回调任务>任务队列</p>
+<p>另外网络请求是使用其他线程的，不影响js的执行</p>
+<h2>浏览器的重绘和重排</h2>
+<p>另外进行DOM操作的时候会发生浏览器排，css渲染或者对定位的TOP位置进行改变会导致重绘</p>
+<p><strong>在改变css位置时，可以使用没有用的过渡动画，css3动画是会启用硬件加速</strong></p>
+</div>
+  </div>
+  </div>
+	<script type="text/javascript" src="../../js/public.js"></script>
+  <script type="text/javascript" src="../../js/progress.js"></script>
+</body>
+</html>

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>javascript设计模式</title>
+  <meta name="keywords" content="javascript设计模式，JavaScript设计模式实现Demo,设计模式"/>
+  <meta name="description" content="Javascript设计模式最基本的分析，以及众多Demo的链接，全面又便于理解的JavaScript设计模式"/>
+	<link rel="stylesheet" type="text/css" href="../../css/public/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="../../css/public/nav.css">
+  <link rel="shortcut icon" href="../../img/avitar.png" type="image/ico">
+  <link rel="icon" sizes="192x192" href="../../img/avitar.png">
+  <link rel="apple-touch-icon" href="../../img/avitar.png">
+</head>
+<body>
+    <div class="nav-onOff nav-in">
+	 <button type="button" class="btn btn-default" aria-label="Left Align">
+       <span class="glyphicon glyphicon-align-left" aria-hidden="true"></span>
+       </button>
+    </div>
+	<div class="wrapper wrapper-animate">
+    <div class="nav-message">
+      	<nav class="nav nav-animate">
+        <img src="../../img/avitar.png">
+            <button type="button" class="btn btn-default nav-right" aria-label="Left Align" >
+            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+            </button>
+        <ul class="list-group list-gap ">
+            <li type="button" class="list-group-item">
+               <a href="../../page/classify.html">文章分类<span class="badge">4</span></a>
+            </li>
+            <li type="button" class="list-group-item">
+               <a href="../../index.html"><span class="badge"></span>
+               实践列表</a>
+            </li>
+            <li type="button" class="list-group-item">
+               <a href="../../page/foundation.html"><span class="badge"></span>
+               基础知识</a>
+            </li>
+            <li type="button" class="list-group-item">
+               <span class="badge"></span>
+               进阶方向  ---待更新
+            </li>
+            <li type="button" class="list-group-item">
+               <span class="badge"></span>
+               node篇  ---待更新
+            </li>
+            <li type="button" class="list-group-item">
+               <span class="badge"></span>
+               其余工具分析篇  ---待更新
+            </li>
+        </ul>
+	    </nav>
+	</div>
+	</div>
+
+		<div class="progress rotate fiexd-pos">
+         <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45"      aria-valuemin="0" aria-valuemax="100" style="width: 0%">     
+            <span class="sr-only">阅读 100%</span>
+         </div>
+        </div>
+<div class="container">
+<div class="container box-shadow">
+<div class="scrollPos">
+<h1><strong>javascript设计模式介绍</strong></h1>
+<h2>说设计模式前先说说JavaScript的设计</h2>
+<pre>function A(){
+  this.c = "a";
+}
+A.prototype = {
+  c:"c"
+}
+var B = new A();
+console.log(B.c);
+B.c = null;
+console.log(B.c);
+</pre>
+<p>如上面代码，可以看出，JavaScript的对象是可变的，而且构造函数上的属性会覆盖原型上的属性</p>
+<p>所以一般会有如下的代码</p>
+<pre>function A(){
+  if(!checkC()){
+    throw new Error("c is null or undefined")
+  }
+}</pre>
+<p>用来检测对象属性是否存在，以保证在程序在不同人手里运行时的不可控状态</p>
+<p>另外，在这里还有私有变量和函数的概念，即在函数外无法访问,下面是代码实现</p>
+<pre>function A(){
+     var b = "b";
+     function set(){
+       return b;
+     }
+    return set;
+
+}</pre>
+<p>在这里使用了闭包，构造函数里b不能在外部访问。函数也可以这样，这些变量和函数就是私有的</p>
+<p>而公有变量和函数可以放在原型上</p>
+<pre>A.prototype.sayName = function(){};
+</pre>
+<p>关于继承的间接写法</p>
+<pre>function extend(subClass,supClass){
+     var F = function(){};
+     F.prototype = supClass;
+     subClass.prototype = new F();
+     subClass.prototype.constructor = subClass;
+}</pre>
+<p>另外还有掺元类，类式继承的写法，不过多介绍</p>
+<p>下面是部分模式的介绍</p>
+<h2>单体模式</h2>
+<pre>var single = {
+  .......
+}</pre>
+<p>其中定义方法和属性。可以直接访问,也可以用函数自执行返回单体对象，使用私有变量</p>
+<p>这种方式常用来提供接口</p>
+<p><strong>链式调用：</strong>在提供的接口方法里返回this</p>
+<pre>(function(window){
+  function set(){
+     .......//set操作
+     return this;
+  }
+  function get(){
+     .......//get操作
+     return this;
+  }
+
+  window["pub"] = {
+     get:get,
+     set:set
+  }
+})(window)
+//调用方法如下
+pub.get().set().get()
+</pre>
+<p>设计模式从简单到复杂，下一个是门面模式</p>
+<h2>门面模式</h2>
+<p>门面模式是指：将复杂的，常用的，抽象起来封装起来，在使用的时候只调用最外层包装的门面!!!</p>
+<p>比如：处理浏览器差异的事件监听，或者其他博文里写过的批量添加监听，获取设置style</p>
+<p>代码连接 <a href="../technology/other.html">点击这里</a></p>
+<h2>适配器模式</h2>
+<p>有时候，需要使用两个库，但是不可能直接改动底层代码，那么就可以使用一个函数转换接口返回的类型。</p>
+<p>比如：$(“#form”)[index] 将jquery对象转换为原生Js对象 </p>
+<pre>
+function convertJquery(el){
+   return $(el)
+}
+</pre>
+<h2>桥接模式</h2>
+<p>桥接模式是指使用一个方法或者对象当作桥梁集合其他的方法或者对象</p>
+<pre>function A(){
+    new B();
+    new C();
+}
+function B(){
+  
+}
+function C(){
+  
+}
+new A();
+</pre>
+<h2>工厂模式</h2>
+<p>根据不同需求创建不同的对象</p>
+<pre>function A(){}
+A.prototype = { 
+   createObject:function(model){
+     var obj;
+     switch(model){
+       case "c":
+           obj = new C();
+           break;
+       case "d":
+           obj = new D();
+           break;
+       default:
+           obj = new F();
+     }
+   }
+}
+</pre>
+<h2>组合模式</h2>
+<p>比如播放器的第三种实现</p>
+<p>结构性的组合，父子类型的组合，比如react,vue的组件</p>
+<p><a href="../projects/videoPlayer.html">点击这里</a></p>
+<h2>装饰者模式</h2>
+<p>该模式是由于一些额外的功能，不能让这些额外的功能直接写到对象里，因为如果这样如果需要的数量多了，就会加大工作量</p>
+<p>比如播放器第二种实现的progress类</p>
+<p><a href="../projects/videoPlayer.html">点击这里</a></p>
+<h2>亨元模式</h2>
+<p>亨元模式是指在数据的组合多了的时候，将数据分为内在数据和外在数据，分开管理，最后组合在一起</p>
+<p>比如日历的日历数据和UI里，HTML日期排列</p>
+<p>实现链接如下：<a href="../projects/datePicker.html">点击这里</a></p>
+<h2>代理模式</h2>
+<p>比如常见的事件代理，在给一个个事件绑定特定的同类事件太频繁的时候，或者某组操作太频繁。可以使用代理自动控制</p>
+<pre>
+window.onload=function(){
+  var ulNode=document.getElementById("list");
+  ulNode.addEventListener('click',function(e){
+       if(e.target&&e.target.nodeName.toUpperCase()=="LI"){/*判断目标事件是否为li*/
+         alert(e.target.innerHTML);
+       }
+     },false);
+  
+};</pre>
+<p>另外比如Http请求代理，Jquery,ajax的实现,代理了内部的XMLHttpRequest实现</p>
+<h2>观察者模式 ---- 也称为发布-订阅模式</h2>
+<p>比如：动画的开始和结束的标识，滚动条滚动的方法，滚动条订阅状态，状态变量就如同一个观察者</p>
+<p>这里有两个参考Demo</p>
+<p>vue <a href="../technology/vueIntro.html">点击这里</a></p>
+<p>滚动条<a href="../projects/scrollbar.html">点击这里</a></p>
+<h2>命令模式</h2>
+<p>该模式是按照命令的顺序执行。比如动画，在执行动画时，逐渐将命令往后传递，这时一个函数就是一个命令</p>
+<p>一些其他实现，参考动画的封装<a href="../projects/other.html">点击这里</a></p>
+<h2>职责链模式</h2>
+<p>职责链模式是在层次非常多的结构里才可以实现该设计，比如js的事件机制。当一层没有的时候继续搜索，有的话执行再继续搜索</p>
+<p>比如vue里compile的实现<a href="../technology/vueIntro.html">点击这里</a></p>
+</div>
+  </div>
+  </div>
+	<script type="text/javascript" src="../../js/public.js"></script>
+  <script type="text/javascript" src="../../js/progress.js"></script>
+</body>
+</html>

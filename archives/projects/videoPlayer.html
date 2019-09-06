@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>h5播放器开发</title>
+  <meta name="keywords" content="播放器组件，优化用户体验，重构模式"/>
+  <meta name="description" content="JavaScript原生实现的播放器组件，并使用了两种不同的设计模式重构，具有参考意义的前端轮子"/>
+	<link rel="stylesheet" type="text/css" href="../../css/public/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="../../css/public/nav.css">
+  <link rel="shortcut icon" href="../../img/avitar.png" type="image/ico">
+  <link rel="icon" sizes="192x192" href="../../img/avitar.png">
+  <link rel="apple-touch-icon" href="../../img/avitar.png">
+</head>
+<body>
+    <div class="nav-onOff nav-in">
+	 <button type="button" class="btn btn-default" aria-label="Left Align">
+       <span class="glyphicon glyphicon-align-left" aria-hidden="true"></span>
+       </button>
+    </div>
+	<div class="wrapper wrapper-animate">
+    <div class="nav-message">
+      	<nav class="nav nav-animate">
+        <img src="../../img/avitar.png">
+            <button type="button" class="btn btn-default nav-right" aria-label="Left Align" >
+            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+            </button>
+       <ul class="list-group list-gap ">
+            <li type="button" class="list-group-item">
+               <a href="../../page/classify.html">文章分类<span class="badge">4</span></a>
+            </li>
+            <li type="button" class="list-group-item">
+               <a href="../../index.html"><span class="badge"></span>
+               实践列表</a>
+            </li>
+            <li type="button" class="list-group-item">
+               <a href="../../page/foundation.html"><span class="badge"></span>
+               基础知识</a>
+            </li>
+            <li type="button" class="list-group-item">
+               <span class="badge"></span>
+               进阶方向  ---待更新
+            </li>
+            <li type="button" class="list-group-item">
+               <span class="badge"></span>
+               node篇  ---待更新
+            </li>
+            <li type="button" class="list-group-item">
+               <span class="badge"></span>
+               其余工具分析篇  ---待更新
+            </li>
+        </ul>
+	    </nav>
+	</div>
+	</div>
+
+		<div class="progress rotate fiexd-pos">
+         <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45"      aria-valuemin="0" aria-valuemax="100" style="width: 0%">     
+            <span class="sr-only">阅读 100%</span>
+         </div>
+        </div>
+<div class="container">
+<div class="container box-shadow">
+<div class="scrollPos">
+<h1>h5播放器开发分析</h1>
+<h2>播放开发的要点</h2>
+<p>播放器的开发是完全依赖h5提供的API,控件围绕着标签对象的API功能进行开发</p>
+<p>主要对应功能的接口如下：(<strong>备注：</strong>video指获取的video的DOM对象</p>
+<ul>
+  <li>video.volume 声音</li>
+  <li>video.play()，video.paused，video.pause() 播放暂停</li>
+  <li>video.currentTime，video.duration 进度</li>
+  <li>video.playbackRate 速度</li>
+  <li>另外全屏的实现是依赖css实现的</li>
+</ul>
+<p><strong>该图标都是使用fontawsome的字体库</strong></p>
+<h3>播放暂停功能</h3>
+<p>因为代码比较简单，就直接贴出来了：</p>
+<pre>var video = document.getElementById("video");
+     video.volume = 0.3;
+     function playPause(){
+      var controller = document.getElementById('control');
+      if(video.paused){
+        video.play();
+        controller.className = 'fa fa-pause';
+      }else{
+        video.pause();
+        controller.className = 'fa fa-play';
+      }
+ }
+ var playEl = document.getElementById("control");
+</pre>
+<h3>播放加速</h3>
+<pre>var dobbleSpeed = document.getElementById("DoubleSpeed");
+ function speedPlay(){
+  if(video.playbackRate === 2){
+    video.playbackRate = 1;
+    dobbleSpeed.className = 'fa fa-forward';
+  }else{
+        video.playbackRate = 2;
+        dobbleSpeed.className = 'fa fa-backward';      
+  }
+ }</pre>
+<h3>声音控制</h3>
+<p>这是进度条的简化版，进度条是由部分组成，拖动功能在阅读器的实现里有简化部分，就不赘述了</p>
+<p>在后面部分还会谈及重构问题</p>
+<pre>var soundBox = document.getElementById('sound-box');
+var soundProgress = document.getElementById('sound-progress');
+var soundThumb = document.getElementById('sound-thumb');
+var soundRunwat = document.getElementById('sound-runWay');
+var volume = video.volume;
+ function controlSound(e){
+    var clickPos = e.clientX;
+    var totalLeft = soundBox.getBoundingClientRect().left;
+    var BoxWidth = soundBox.offsetWidth;
+    var pos = clickPos-totalLeft;
+    var precent = pos/BoxWidth;
+    if(precent <=0.01){
+      video.volume = 0;
+    }else if(precent >= 1){
+        video.volume = 1;     
+    }else {
+        video.volume = precent;
+    }
+    volume = video.volume;
+    console.log(video.volume);
+    soundThumb.style.left = pos + 'px';
+    soundRunwat.style.left = pos + 'px';
+    soundProgress.style.width = pos + 'px';
+ }
+soundBox.addEventListener('click', controlSound, false);</pre>
+<h3>静音</h3>
+<pre> var sound = document.getElementById('sound');
+ function muteOrSound(){
+  if(video.volume === 0){
+       video.volume = volume;
+       sound.className = 'fa fa-volume-up';
+  }else{
+       volume = video.volume;
+       video.volume = 0;
+       sound.className = 'fa fa-volume-off'
+  }
+ }
+</pre>
+<h3>播放进度条和更新控制</h3>
+<pre>var thumb = document.getElementById("thumb");
+var sliderProgress = document.getElementById('slider-progress');
+var sliderRunway = document.getElementById('slider-runWay');
+ function tick(){
+  if (video.ended) {
+       thumb.style.left = '100%';
+       sliderRunway.style.left = '100%';
+       sliderProgress.style.width = '100%';
+       thumb.style.left = 0;
+       sliderRunway.style.left = 0;
+       sliderProgress.style.width = 0;
+       video.currentTime = 0;
+       playPause();
+  }else if (!video.paused) {
+       var currentTime = video.currentTime;
+       var duration = video.duration;
+       var precent = currentTime/duration;
+       thumb.style.left = (100*precent) + '%';
+       sliderRunway.style.left = (100*precent) + '%';
+       sliderProgress.style.width = (100*precent) + '%';
+  }
+ }
+
+
+ var sliderBox = document.getElementById("slider-box");
+ function changePosition(e){
+  var clickPos = e.clientX;
+  var totalLeft = sliderBox.getBoundingClientRect().left;
+    var playPos = clickPos - totalLeft;
+    var BoxWidth = sliderBox.offsetWidth;
+    var precent = playPos/BoxWidth;
+    video.currentTime = precent*video.duration;
+    thumb.style.left = playPos + 'px';
+    sliderRunway.style.left = playPos + 'px';
+    sliderProgress.style.width = playPos + 'px';
+ }
+ video.addEventListener('timeupdate', tick, false);
+ sliderBox.addEventListener('click', changePosition, false);
+ </pre>
+<h3>全屏功能</h3>
+<pre>var fullP = document.getElementById("fullPage");
+ function fullPage(){
+  var player = document.getElementById("player");
+  if(player.className === 'full-player'){
+    player.className = '';
+    fullP.className = 'fa fa-expand';
+  }else{
+    player.className += 'full-player';
+    fullP.className = 'fa fa-compress';
+  } 
+}</pre>
+<h3>时间展示</h3>
+<pre>function formatTime(time) {
+  var formatTime = null,
+      secs = 0,
+      mins = 0,
+      hours = 0,
+      displayHours,
+      seperator = ':';
+
+  secs = parseInt(time % 60);
+  mins = parseInt((time / 60) % 60);
+  hours = parseInt(((time / 60) / 60) % 60);
+  displayHours = (parseInt(((time / 60) / 60) % 60) > 0) 
+  secs = ("0" + secs).slice(-2);
+  mins = ("0" + mins).slice(-2);
+  return (displayHours ? hours + ':' : '') + mins + seperator + secs;
+}
+元素.innerHTML = formatTime(video.currentTime) + '/' +formatTime(video.duration);
+</pre>
+<p>一个播放器已经完成了</p>
+<p>虽然每个控件的每个功能都十分简单，放在一起是比较直观并且有序的</p>
+<p>但是它有没有可能更完善一些，为所有同类的组件开发提供一些方便，比如进度条，比如事件绑定，比如组件的初始化方式。于是就有了一次实验，另外在网上搜集了一个封装的Demo进行参考，实现了第二个Demo</p>
+<h2>播放器的重构</h2>
+<p>播放器的重构,如以上的思考，保留直观的东西，把可以抽象出来的辅助函数抽象出来，于是就有了基本的思考方向</p>
+<ul>
+  <li>进度条方法的封装</li>
+  <li>因为是控件的开发，将控件的方法统一抽象放入控件类</li>
+  <li>辅助函数的封装
+     <ul>
+      <li>进度条计算</li>
+      <li>进度条样式设置</li>
+      <li>Dom元素的创造，和类的添加</li>
+      <li>格式化日期</li>
+      <li>加载DOM</li>
+      <li>方法的批量绑定</li>
+     </ul>
+  </li>
+</ul>
+<h3>播放器JS的外壳</h3>
+<pre>function Video(){
+  this.videoSetting = {
+       poster : './poster.jpg',
+       src : './video/saySomething.mp4',
+       type: 'video/mp4'
+  };
+  this.init = function(){}
+}
+Video.prototype = {   //需要共享的全局变量
+  constructor : Video,
+  domData : null,
+  video : null,
+  volume : 0
+};
+function Progress(){} //进度条类
+function Control(){
+    var domData = this.__proto__.domData;
+    var video = this.__proto__.domData[1]['video'];
+    var volume = this.__proto__.volume;
+    var that = this;
+    this.tick = function(){};
+    this.controlPlay = function(){}; 
+    this.playPause = function(){};
+    this.speedPlay = function(){};
+    this.mutedSound = function(){};
+    this.controlSound = function(){};
+    this.scaleVideo = function(){};
+}
+Progress.prototype = Video.prototype;
+Control.prototype = Video.prototype;</pre>
+<p>所有的子控件能访问到Video的原型里的变量，同时，它们之间的继承关系也是很清晰的</p>
+<h3>提取辅助函数</h3>
+<pre>(function(window,undefined){
+  function createDomTree(tagArray,classArray,idArr) {
+    var domArr = new Array();      
+    var idObj = {};         //存储DOM对象的指向，最后绑定事件
+    tagArray.forEach(function(element, index) {
+      classArray.forEach(function(classEle,i){
+        idArr.forEach( function(idEle, j) {
+          if(index === i && i === j){
+             if(element instanceof Array){
+                var domSecArr = createDomTree(element,classEle,idEle);
+                domArr.push(domSecArr[0]);
+                idObj = Object.assign(idObj,domSecArr[1]);  //DOM的结构在数组间的存储关系
+             }else{
+                var node = document.createElement(element);
+                var idName = idEle;
+                node.className = classEle;
+                node.id = idEle;
+                domArr.push(node); 
+                idObj[idName] = node;      
+             }
+          }else{
+            return;
+          }   
+        });
+      });
+    });
+    var returnArr = new Array();
+    returnArr.push(domArr);
+    returnArr.push(idObj);
+    return returnArr;
+  }
+  
+  function LoadDomTree(nodeArr,fragment){
+    if (!nodeArr) {
+      return;
+    }
+    var fragments = fragment || document.createDocumentFragment();
+    var lastDom = fragments;
+    nodeArr.forEach(function(element, index) {
+      if(element instanceof Array){
+         LoadDomTree(element,lastDom);
+      }else{
+         fragments.appendChild(element);    //用fragments最后挂载DOM,节省浏览器性能开销
+         lastDom = element;
+      }
+    });
+    return fragments;
+  }
+  
+  function addHandler(target,events){
+         console.log(Object.keys(events))
+    if(!target || !events || !Object.keys(events)){
+      return ;
+    }
+    Object.keys(events).forEach(function(ev, index) {
+        target.addEventListener(ev, function(target){
+          events[ev].call(this, target);      //门面模式，抽象统一的方法
+        }, false);
+    });
+  }
+
+  function formateTime(time){
+    var formateTime = '',
+        seconds = 0,
+        minutes = 0,
+        hours = 0,
+        isDisplayHours = undefined,
+    seconds = parseInt(time % 60);
+    minutes = parseInt((time / 60) % 60);
+    hours = parseInt(((time / 60) / 60) % 60);
+    isDisplayHours = (hours > 0);          //单纯的辅助方法
+    seconds = ("0" + seconds).slice(-2);
+    minutes = ("0" + minutes).slice(-2);
+    formateTime = (isDisplayHours ? hours + ':' : '') + minutes + ':' + seconds;
+    return formateTime;
+  }
+
+  function getComputed(ele,e){             //抽象出的计算进度条百分比
+    var clickpos = e.clientX,
+        eleLeft = ele.getBoundingClientRect().left,
+        eleWidth = ele.offsetWidth;
+    var gap = clickpos - eleLeft;
+    if (gap <= 0) {
+      gap = 0;
+      var precent = 0;
+    }else{
+        var precent = gap/eleWidth;
+    }
+    return [gap,precent];
+  }
+  
+  function progressStyle(idobj,prefix,precent){   //抽象出的进度条设置
+     idobj[(prefix + 'thumb')].style.left = (100*precent) + '%';
+     idobj[(prefix + 'runway')].style.left = (100*precent) + '%';
+     idobj[(prefix +  'progress')].style.width = (100*precent) + '%';
+  }
+  window['util'] = {
+    'createDomTree' : createDomTree,
+    'LoadDomTree' : LoadDomTree,
+    'addHandler' : addHandler,
+    'formateTime' : formateTime,
+    'getComputed' : getComputed,
+    'progressStyle' : progressStyle,
+  }             //以匿名函数的方式将API暴露到window
+})(window)</pre>
+<h3>进度条的处理</h3>
+<p>简单的业务处理和API调用</p>
+<pre>function Progress(){
+    this.isdragging = false;
+    isBuffer = true;
+    var domData = this.__proto__.domData;
+    var video = this.__proto__.domData[1]['video'];
+    var volume = this.__proto__.volume;   
+    this.dragStart = function(ele,e){
+        var posData = util.getComputed(ele,e);
+        if(ele.id === 'slider-box'){
+          video.pause();
+          video.currentTime = posData[1]*video.duration;
+          util.progressStyle(domData[1],'slider-',posData[1]);
+        }else{
+          domData[1].sound.className = 'fa fa-volume-up';
+          if(posData[1] < 0.01){
+            video.volume = 0;
+          }else if(posData[1] >=1 ){
+            video.volume = 1;
+          }else{
+            video.volume = posData[1];
+          }
+                volume = video.volume;
+
+            if (posData[0] <= 0) {
+              util.progressStyle(domData[1],'sound-',0);
+            }else{
+              util.progressStyle(domData[1],'sound-',posData[1]);         
+            }
+        }
+    };
+    this.dragging = function(ele,e) {
+      if (!this.isdragging) {
+        return;
+      }else{
+        var posData = util.getComputed(ele,e);
+        if(ele.id === 'slider-box'){
+          video.currentTime = posData[1]*video.duration;
+          util.progressStyle(domData[1],'slider-',posData[1]); 
+        }else if (ele.id === 'sound-box') {
+          if (posData[1] <= 0.01) {
+            video.volume = 0;
+          }else{
+            video.volume = posData[1];
+          }
+
+          volume = video.volume;
+                if (posData[0] <= 0) {
+                  util.progressStyle(domData[1],'sound-',0);
+                }else{
+                  util.progressStyle(domData[1],'sound-',posData[1]);                 
+                }
+
+        }
+      }
+    };
+    this.dragEnd = function(ele,e){
+      this.isdragging = false;
+      if(isBuffer){
+        video.play();
+        domData[1]['controlPlay'].className = 'fa fa-pause';
+      }
+      removeEventListener('mousemove',this.dragging);
+      removeEventListener('mouseup',this.dragEnd);
+    }
+  }</pre>
+<h3>控件封装</h3>
+<pre>function Control(){
+    var domData = this.__proto__.domData;
+    var video = this.__proto__.domData[1]['video'];
+    var volume = this.__proto__.volume;
+    var that = this;
+    this.tick = function(){
+      if (video.ended) {
+        util.progressStyle(domData[1],'slider-',1);
+        util.progressStyle(domData[1],'slider-',0);
+        var str = util.formateTime(0) + '/' + util.formateTime(duration);
+        domData[1]['time-data'].innerHTML = str;
+            that.playPause();
+      }else if (!video.paused) {
+            var currentTime = video.currentTime;
+            var duration = video.duration;
+            var precent = currentTime/duration;
+            var str = util.formateTime(currentTime) + '/' + util.formateTime(duration);
+            domData[1]['time-data'].innerHTML = str;
+            util.progressStyle(domData[1],'slider-',precent);
+      }
+    };    
+    this.controlPlay = function(e){
+        var posData = util.getComputed(domData[1]['slider-box'],e);
+        video.currentTime = posData[1]*video.duration;
+        util.progressStyle(domData[1],'slider-',posData[1]);
+    };
+    this.playPause = function(){
+      var controller = domData[1]['controlPlay'];
+      if(video.paused){
+         video.play();
+       controller.className = 'fa fa-pause';
+      }else{
+       video.pause();
+       controller.className = 'fa fa-play';
+      }
+    };
+    this.speedPlay = function(){
+      if(video.playbackRate === 2){
+       video.playbackRate = 1;
+         domData[1]['doubble-speed'].className = 'fa fa-forward';
+      }else{
+           video.playbackRate = 2;
+           domData[1]['doubble-speed'].className = 'fa fa-backward';      
+      }
+    };
+    this.mutedSound = function(){
+      if(video.volume === 0){
+           video.volume = volume;
+           domData[1].sound.className = 'fa fa-volume-up';
+      }else{
+           volume = video.volume;
+           video.volume = 0;
+           domData[1].sound.className = 'fa fa-volume-off'
+      }
+    };
+    this.scaleVideo = function(){
+      var player = document.getElementById("player");
+        if(player.className === 'full-player'){
+       player.className = '';
+       domData[1]['scale-video'].className = 'fa fa-expand';
+      }else{
+         player.className = 'full-player';
+       domData[1]['scale-video'].className = 'fa fa-compress';
+      } 
+    };
+    this.controlSound = function(e){
+        var posData = util.getComputed(domData[1]['sound-box'],e);
+        if(posData[1] <= 0.01){
+          video.volume = 0;
+        }else if(posData[1] >= 1){
+            video.volume = 1;     
+        }else {
+            video.volume = posData[1];
+        }
+        volume = video.volume;
+        util.progressStyle(domData[1],'sound-',posData[1]);
+        }
+  }</pre>
+<h3>初始化方法</h3>
+<pre>this.init = function(domArr,classArr,idArr){
+      this.__proto__.domData = util.createDomTree(domArr,classArr,idArr);
+      var domData = this.__proto__.domData;
+      this.__proto__.video = domData[1]['video'];
+      var video = domData[1]['video'];
+      this.__proto__.volume = video.volume = 0.3;
+        var fragments = util.LoadDomTree(domData[0]);
+        document.getElementById('player').appendChild(fragments);
+        video.poster = this.videoSetting.poster;
+        video.src = this.videoSetting.src;
+        video.type = this.videoSetting.type; 
+        video.volume = 0.3;
+        domData[1]['time-data'].innerHTML = util.formateTime(0) + '/' + util.formateTime(NaN);
+        var progressFn = new Progress();
+        var controlFn = new Control();
+        util.addHandler(domData[1]['sound-box'],{
+          'click' : controlFn.controlSound,
+          'mousedown' : progressFn.dragStart.bind(this,domData[1]['sound-box']),
+          'mousemove' : progressFn.dragging.bind(this,domData[1]['sound-box']),
+          'mouseup' : progressFn.dragEnd.bind(this,domData[1]['sound-box']),
+            'mouseleave' : progressFn.dragEnd.bind(this,domData[1]['sound-box'])
+        });
+        util.addHandler(domData[1]['slider-box'],{
+          'click' : controlFn.controlPlay,
+          'mousedown' : progressFn.dragStart.bind(this,domData[1]['slider-box']),
+          'mousemove' : progressFn.dragging.bind(this,domData[1]['slider-box']),
+          'mouseup' : progressFn.dragEnd.bind(this,domData[1]['slider-box']),
+            'mouseleave' : progressFn.dragEnd.bind(this,domData[1]['slider-box'])
+        });
+        util.addHandler(domData[1]['video'],{
+          'click' : controlFn.playPause,
+          'timeupdate' : controlFn.tick
+        });
+        util.addHandler(domData[1]['controlPlay'],{
+          'click' : controlFn.playPause
+        });
+        util.addHandler(domData[1]['scale-video'],{
+          'click' : controlFn.scaleVideo
+        });
+        util.addHandler(domData[1]['doubble-speed'],{
+          'click' : controlFn.speedPlay
+        });
+        util.addHandler(domData[1]['sound'],{
+          'click' : controlFn.mutedSound
+        });
+    }</pre>
+<h3>最后</h3>
+<p><strong>见证奇迹的时候到了！！！</strong></p>
+<pre>  var domArr = ['video',['source'],'div',['div','div','div'],'div',['div','div','div','div',['div','div',['div','div','div']],'div']];
+  var classArr = ['',[''],'',['','',''],'',['fa fa-play','','fa fa-forward','',['fa fa-volume-up','',['','','']],'fa fa-expand']];
+  var idArr = ['video',[''],'slider-box',['slider-progress','slider-thumb','slider-runway'],'other-control',['controlPlay','time-data','doubble-speed','sound-control',['sound','sound-box',['sound-progress','sound-thumb','sound-runway']],'scale-video']];
+  new Video().init(domArr,classArr,idArr);</pre>
+<p>这样封装的好处是，它很符合HTML,CSS,Javascript在浏览器的工作机制的直觉</p>
+<p><strong>注：</strong>浏览器请求到HTML文件时，先解析DOM树，然后再解析CSS合并DOM生成渲染树,最后绑定方法</p>
+<h2>第三种播放器的封装方式</h2>
+<p>第三种插件的封装是按照功能分类的，最后在Video类new，new的时候执行了各自的初始化方法</p>
+<h3>第三种方法的外壳</h3>
+<pre>;(function(root, undefined) {
+  const doc = document;
+  const addEventListener = root.addEventListener;
+  const removeEventListener = root.removeEventListener;
+  const tools = {};
+  
+  const Player = function() {
+    this.settings = {
+      poster: './poster.jpg',
+      el: '#player',
+      src: './video/saySomething.mp4'
+    };
+    this.player = null;
+    this.video = null;
+    this.progress = null;
+    this.volume = null;
+    this.controller = null;
+    this.contentArea = null;
+    this.init();
+  };
+  Player.prototype = {
+    init: function() {
+      this.player = doc.querySelector(this.settings.el);
+      this.video = new Video(this);
+      this.progress = new Progress(this);
+      this.controller = new Controller(this);
+      this.volume = new Volume(this);
+      this.createView();
+      this.onEvents();
+    },
+    createView: function() {
+      const { video, progress, controller, volume } = this;
+      const { createEle, append } = tools;
+      const contentArea = createEle('player-wrapper');
+      contentArea.appendChild(video.video);
+      const control = createEle('control');
+      const controlStrip = createEle('player-controller');
+      append(control, [controller.controllerArea, volume.volumeArea]);
+      append(controlStrip, [progress.progressDOM, control]);
+      append(this.player, [contentArea, controlStrip]);
+      this.contentArea = contentArea;
+    },
+  }
+
+    const Video = function($parent) {
+    this.$parent = $parent;
+    this.src = null;
+    this.video = null;
+    this.isPlaying = false;
+    this.meta = {
+      currentTime: 0,
+      duration: 0,
+      volume: 0.5
+    };
+    this.init();
+    };
+
+    Video.prototype = {
+    init: function() {
+      this.src = this.$parent.src;
+      this.video = this.createVideo();
+      this.video.poster = this.$parent.settings.poster;
+      this.onEvents();
+    },
+    createVideo: function() {
+      const options = this.$parent.settings;
+      const theVideo = tools.createEle('video', 'video');
+      theVideo.setAttribute('preload', 'auto');
+      const sourceNode = doc.createElement('source');
+      sourceNode.setAttribute('src', options['src']);
+      sourceNode.setAttribute('type', 'video/' + String(options['src']).split('.').pop())
+      theVideo.appendChild(sourceNode);
+      return theVideo;
+    },
+    setCurrentVolume: function(volume) {
+      this.video.volume = volume;
+    },
+    changeVideoPlayProgress: function(percent) {
+      const { duration } = this.meta;
+      const currentTime = duration * percent;
+      this.video.currentTime = currentTime;
+    },
+    setCurrentProgress: function() {
+      const progress = this.$parent.progress;
+      const { currentTime, duration } = this.meta;
+      let percent = currentTime / duration;
+      percent = percent ? percent.toFixed(6) : 0;
+      progress.setCurrentProgress(percent);
+    },
+    setCurrentTime: function(currentTime) {
+      const timeArea = this.$parent.controller.timeArea;
+      const formatCurrentTime = tools.formatTime(currentTime);
+      timeArea.setCurrentTime(formatCurrentTime);
+      timeArea.setCurrentTimeText();
+      this.setCurrentProgress();
+    },
+    setDuration: function() {
+      const timeArea = this.$parent.controller.timeArea;
+      const formatDuration = tools.formatTime(this.meta.duration);
+      timeArea.setEndTime(formatDuration);
+      timeArea.setEndTimeText();
+    },
+    onEvents: function() {
+      const that = this;
+      tools.on(this.video, {
+        'click': function() {
+          that.isPlaying ? that.pause() : that.play();
+          that.changeStateIcon();
+        },
+        'loadedmetadata': function() {
+          const meta = that.meta;
+          meta.duration = this.duration;
+          that.setDuration();
+        },
+        'timeupdate': function() {
+          that.meta.currentTime = this.currentTime;
+          that.setCurrentTime(this.currentTime);
+        },
+        'ended': function() {
+          that.isPlaying = false;
+          that.changeStateIcon();
+          that.meta.currentTime = 0;
+          that.setCurrentProgress();
+        }
+      })
+    },
+    changeStateIcon: function() {
+      const playArea = this.$parent.controller.playArea;
+      playArea.changeIcon();
+      playArea.changePlayState();
+    },
+    play: function() {
+      this.video.play();
+      this.isPlaying = true;
+    },
+    pause: function() {
+      this.video.pause();
+      this.isPlaying = false;
+    }
+  }
+
+  const Slider = function($parent, isBuffer, currentPosition) {
+    this.$parent = $parent;
+    this.sliderBox = null;
+    this.progressBox = null;
+    this.thumbBox = null;
+    this.isBuffer = isBuffer || false;
+    this.isDragging = false;
+    this.startX = 0;
+    this.startPosition = currentPosition || 0;
+    this.currentPosition = currentPosition || 0;
+    this.currentValue = 0;
+    this.init();
+  };
+  Slider.prototype ={};
+  const PlayArea = function($parent) {
+    this.$parent = $parent;
+    this.stateIcon = null;
+    this.area = null;
+    this.isPlaying = false;
+    this.init();
+  };
+  PlayArea.prototype = {};
+  ........
+  ........
+  ........
+  new Player();
+  };
+</pre>
+<p>这种方法就不多赘述了，封装的程度很高，各自有独立状态和实现，最后以组合整个组件的方式实现。也是一大特点。</p>
+	</div>
+  </div>
+  </div>
+	<script type="text/javascript" src="../../js/public.js"></script>
+  <script type="text/javascript" src="../../js/progress.js"></script>
+</body>
+</html>

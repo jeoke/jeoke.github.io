@@ -1,0 +1,108 @@
+.nav-onOff{
+	position: absolute;
+	left: 20px;
+	top:20px;
+	opacity: 0;
+}
+.wrapper{
+	position: absolute;
+	width: 100%;
+	height:100%;
+	z-index:10;
+	background-color: rgba(181,179,179,0.8);
+}
+.nav-message{
+	position: relative;
+	height: 100%;
+	background-color: white;
+}
+.nav-message img{
+    width: 120px;
+    height: 100px;
+    margin-left: 26%;
+    margin-top: 25%;
+}
+.nav-right{
+	position: absolute;
+  right: -18%;
+  top:4%;
+}
+.nav-animate{
+	transform: translateX(-100%);
+	transition-duration: 0.8; 
+}
+.wrapper-animate{
+	z-index: -1;
+	opacity: 0;
+    transition-property: opacity,z-index;
+}
+.nav-in{
+	opacity: 1;
+	z-index: 2;
+    transition-property: opacity,z-index;
+    transition-duration: 0.3;
+}
+.list-gap{
+	padding-left: 9%;
+    padding-top: 30%;
+    padding-right: 4%;
+    cursor: pointer;
+    margin-top: -22%;
+}
+
+.box-shadow{
+    overflow: hidden;
+    height: 90vh;
+    margin-top: 30px;
+    border:1px solid #fff;
+	  box-shadow: 0 4px 5px 0 rgba(0,0,0,.14), 0 1px 10px 0 rgba(0,0,0,.12), 0 2px 4px -1px rgba(0,0,0,.2);
+}
+
+.fiexd-pos{
+    position: fixed;
+    right: -240px;
+    top: 40%;
+    width: 65vh;
+}
+
+.rotate{
+	transform: rotate(90deg);
+}
+
+.imgScale{
+   animation: imageScale  2s ease-in-out 0s 1 normal; 
+   -moz-animation: imageScale  2s ease-in-out 0s 1 normal; 
+   -webkit-animation: imageScale  2s ease-in-out 0s 1 normal; 
+   -o-animation: imageScale  2s ease-in-out 0s 1 normal; 
+}
+
+@keyframes imageScale{
+  0%{
+      transform:rotate(0deg);
+  }
+  30%{
+  	  transform: scale(1.1,1.1);
+  }
+  60%{
+      transform:rotate(20deg);
+  }
+  100%{
+      transform:rotate(0deg);
+  }
+}
+
+.scrollPos{
+  position: relative;
+  left: 0;
+  top: 0;
+}
+@media (max-width: 768px){
+  .nav-message{
+    width: 40%;
+  }
+}
+@media (min-width: 968px){
+  .nav-message{
+    width: 20%;
+  }
+}

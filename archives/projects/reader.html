@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>阅读器的开发</title>
+  <meta name="keywords" content="epub格式在线阅读器，原生JavaScript实现阅读器，阅读器实现基本原理"/>
+  <meta name="description" content="JavaScript实现的原生阅读器，可以修改使用常见的库重构，比如react,vue."/>
+
+	<link rel="stylesheet" type="text/css" href="../../css/public/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="../../css/public/nav.css">
+  <link rel="shortcut icon" href="../../img/avitar.png" type="image/ico">
+  <link rel="icon" sizes="192x192" href="../../img/avitar.png">
+  <link rel="apple-touch-icon" href="../../img/avitar.png">
+</head>
+<body>
+    <div class="nav-onOff nav-in">
+	 <button type="button" class="btn btn-default" aria-label="Left Align">
+       <span class="glyphicon glyphicon-align-left" aria-hidden="true"></span>
+       </button>
+    </div>
+	<div class="wrapper wrapper-animate">
+    <div class="nav-message">
+      	<nav class="nav nav-animate">
+        <img src="../../img/avitar.png">
+            <button type="button" class="btn btn-default nav-right" aria-label="Left Align" >
+            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+            </button>
+        <ul class="list-group list-gap ">
+            <li type="button" class="list-group-item">
+               <a href="../../page/classify.html">文章分类<span class="badge">4</span></a>
+            </li>
+            <li type="button" class="list-group-item">
+               <a href="../../index.html"><span class="badge"></span>
+               实践列表</a>
+            </li>
+            <li type="button" class="list-group-item">
+               <a href="../../page/foundation.html"><span class="badge"></span>
+               基础知识</a>
+            </li>
+            <li type="button" class="list-group-item">
+               <span class="badge"></span>
+               进阶方向  ---待更新
+            </li>
+            <li type="button" class="list-group-item">
+               <span class="badge"></span>
+               node篇  ---待更新
+            </li>
+            <li type="button" class="list-group-item">
+               <span class="badge"></span>
+               其余工具分析篇  ---待更新
+            </li>
+        </ul>
+	    </nav>
+	</div>
+	</div>
+
+		<div class="progress rotate fiexd-pos">
+         <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45"      aria-valuemin="0" aria-valuemax="100" style="width: 0%">     
+            <span class="sr-only">阅读 100%</span>
+         </div>
+        </div>
+<div class="container">
+<div class="container box-shadow">
+<div class="scrollPos">
+<h1>阅读器开发分析</h1>
+<h2>阅读器开发的要点</h2>
+<p>epub.min.js,是解析epub格式电子书的js库，由于github上只是es6引入模块的写法，但是可以使用请求把代码复制粘贴</p>
+<p>epub.js在解析电子书后返回了一些接口，以便开发者开发。而前端的电子书开发，是借助这些接口进行交互功能开发</p>
+<p>主要接口如下</p>
+<ul>
+  <li>book = ePub(arrayBuffer,{encoding:'binary'}),返回book对象</li>
+  <li>rendition = book.renderTo()</li>
+  <li>displayed = rendition.display</li>
+  <li>themes = rendition.themes</li>
+  <li>另有location,navigator等</li>
+</ul>
+<p>首先明确需求，开发在线电子阅读器，文件是用户本地的，那么如果要使电子书呈现，那么就需要使用fileAPI读取让用户手动授权读取文件</p>
+<p><strong>电子阅读器的起始核心部分：</strong></p>
+<pre>function showEpub(){
+  var reader = new FileReader();
+    file = x.files[0];
+  reader.onload = function(){
+    var arrayBuffer = this.result;
+      //生成Book 对象
+      window.book = ePub(arrayBuffer,{
+        encoding:'binary'
+      });
+      //生成Redition对象
+      window.rendition = book.renderTo(read,{
+        width: window.innerWidth / 2,
+        height: window.innerHeight -200,
+      });
+      window.displayed = window.rendition.display();
+  reader.readAsArrayBuffer(file);
+}
+</pre>
+<p>这是核心部分，剩下的就是使用API围绕这些对象进行开发</p>
+<p>确定需求，需要开发：翻页，进度条，字体调整，主题，目录页</p>
+<h3>翻页功能的开发：redition.prev() 与 next()方法</h3>
+<p>向前翻页redition.prev()</p>
+<pre>function prePage(){
+   if(rendition && isReady){
+      rendition.prev();
+      if(bookLocation.currentLocation > 0){   //由于到时候需要开发进度条，所以需要存储位置信息
+        --bookLocation.currentLocation;  //由于API的问题，这里的currentLocation只是一个存储数据的变量
+        console.log(bookLocation.currentLocation)
+        var precent = bookLocation.currentLocation/bookLocation.length();
+        progressStyle(domData,'read-',precent);
+      } 
+      if (precent < 0.05) {
+        progressStyle(domData,'read-',0);
+      }
+   }
+}</pre>
+<p>向后翻页同上</p>
+<h3>内容进度条开发</h3>
+<p>进度条开发，由于这里进度条，字体调整的时候也同样需要用到，所以封装设置样式的方法</p>
+<p>还有计算进度条数据的方法</p>
+<pre>
+function getStyle(obj, name){ 
+    if(obj.currentStyle){ 
+      return obj.currentStyle[name]; 
+    }else{ 
+      return getComputedStyle(obj, false)[name]; 
+    } 
+}
+function getComputed(ele,e){         //计算间距
+    var clickpos = e.clientX,
+        eleLeft = ele.getBoundingClientRect().left,
+        eleWidth = ele.offsetWidth;
+    var gap = clickpos - eleLeft;
+    if (gap <= 0) {
+      gap = 0;
+      var precent = 0;
+    }else{
+        var precent = gap/eleWidth;
+    }
+    return [gap,precent];
+  }
+  
+function progressStyle(idobj,prefix,precent){   //设置样式
+    idobj[(prefix + 'thumb')].style.left = (100*precent) + '%';
+    idobj[(prefix + 'runway')].style.left = (100*precent) + '%';
+    idobj[(prefix +  'progress')].style.width = (100*precent) + '%';
+}</pre>
+<p>这样就能根据元素，和ID前缀找到对应的进度条。设置样式</p>
+<p>这是阅读进度条的处理，根据位置获取bookLocation的位置，并且在book对象准备好生成位置信息</p>
+<pre>book.ready.then(function(){
+    return book.locations.generate();
+  }).then(function(result){
+    window.bookLocation = book.locations;    
+}
+  progressStyle(domData,'read-',posData[1]);
+    var locations = posData[1] > 0 ? bookLocation.cfiFromPercentage(posData[1]) : 0;
+    bookLocation.currentLocation = locations; 
+    rendition.display(locations);
+</pre>
+<p><strong>踩坑1:</strong>进度条的位置信息只能表示大概的位置。这是候就需要对位置信息有个大概的调整，使进度条符合用户直觉</p>
+<pre>if(bookLocation.currentLocation > 0){
+  --bookLocation.currentLocation;
+  console.log(bookLocation.currentLocation)
+  var precent = bookLocation.currentLocation/bookLocation.length();
+  progressStyle(domData,'read-',precent);
+} 
+   if (precent < 0.05) {
+     progressStyle(domData,'read-',0);
+}</pre>
+<p>由于精度问题，所以在起始百分比内，需要将进度条设置为0.这样在用户拉动进度条时再回退就不会显得突兀</p>
+<p>另外，介绍一下拖动滚动条的常用设置</p>
+<pre>var isdragging = false;
+var isReady = false;
+this.dragStart = function(ele,e){
+  e.preventDefault();
+  isdragging = true;
+};
+this.dragging = function(ele,e) {
+  if (isdragging && isReady) {
+}
+};
+this.dragEnd = function(ele,e){
+  isdragging = false;
+  removeEventListener('mousemove',this.dragging);
+  removeEventListener('mouseup',this.dragEnd);
+}</pre>
+<h3>字体进度条</h3>
+<p>字体进度条与内容进度条的区别是，一个是控制内容，一个是控制字体，所以可以将业务逻辑放入同样的方法中控制</p>
+<p>首先是字体的API</p>
+<pre>window.themes = rendition.themes;</pre>
+<p><strong>备注:</strong>字体和主题设置时同一各API，rendition.themes</p>
+<p>接下来时字体的设置</p>
+<pre>if(posData[1] < 0.3){
+    themes.fontSize(100);           
+}else if(posData[1] >=1 ){
+    themes.fontSize(bodyFontSize*2 + 'px');
+}else{
+  themes.fontSize(posData[1]*bodyFontSize*2 + 'px');
+}
+if (posData[0] <= 0) {
+  progressStyle(domData,'font-',0);
+}else{
+  progressStyle(domData,'font-',posData[1]);          
+}</pre>
+<p>是的，由于字体的的进度条也是大概比例等比缩放或者放大，也需要确定范围</p>
+<p>除了字体的进度条外，也需要有点击放大和缩小，避免进度条的精度问题</p>
+<pre>function increateFont(){
+  var fontNum = parseInt(getStyle(domData['font-progress'],'width'));
+  var fontAjW = parseInt(getStyle(fontNormal,'width'));
+  if(fontNum/fontAjW >= 0 && fontNum/fontAjW <= 0.9){
+    themes.fontSize((fontNum/fontAjW+0.1)*bodyFontSize*2 + 'px');
+    progressStyle(domData,'font-',fontNum/fontAjW+0.1);     
+  }else{
+    themes.fontSize(bodyFontSize*2 + 'px');
+    progressStyle(domData,'font-',1);
+  }
+}
+
+function decreateFont(){
+  var fontNum = parseInt(getStyle(domData['font-progress'],'width'));
+  var fontAjW = parseInt(getStyle(fontNormal,'width'));
+  if(fontNum/fontAjW <= 0.1 ){
+    themes.fontSize(0.1*bodyFontSize*2 + 'px');
+    progressStyle(domData,'font-',0);     
+  }else{
+    themes.fontSize((fontNum/fontAjW-0.1)*bodyFontSize*2 + 'px');
+    progressStyle(domData,'font-',fontNum/fontAjW-0.1);
+  } 
+}</pre>
+<h3>主题设置</h3>
+<p>主题也是阅读器一个常备的功能，它是通过以下方法实现注册的</p>
+<pre>themes.register('night',{
+    "body":{
+      "color":"yellow",
+      "background":"#000",
+      "opacity":'0.6'
+    }
+  });
+  themes.register('sun',{
+    "body":{
+      "color":"#000",
+      "background":"#fff",
+      "opacity":'1'
+    }
+});</pre>
+<p>相比于其他功能，这个功能要容易实现的多，但是由于布局问题和配色，它的功能体验对整体的设计要求较高</p>
+<pre>function themeNight(){
+  themes.select('night');
+}
+
+function themeSun(){
+  themes.select('sun');
+}</pre>
+<h3>目录功能</h3>
+<p>目录的实现相比进度条这样的交互功能而言，简单的多，只涉及DOM节点的添加,渲染和绑定</p>
+<p>就像对于前端而言：前端就是个渲染数据的，当然这是题外话</p>
+<pre>book.ready.then(function(){
+   return book.locations.generate();
+}).then(function(result){
+  function createNodeTree(catalogData){
+    var fragment = document.createDocumentFragment();
+    var divContent,textNode;
+    console.log(catalogData)
+      for(var i in catalogData){
+        divContent = document.createElement('div');
+        divContent.addEventListener('click', jumpTo.bind(this,catalogData[i]['href']), false);
+    textNode = document.createTextNode(catalogData[i]['label']);
+    divContent.appendChild(textNode);
+    fragment.appendChild(divContent);
+}
+return fragment;
+}
+
+window.NodeTree = createNodeTree();
+window.navigation  = book.navigation;
+window.catalogData = navigation.toc;
+window.NodeTree = createNodeTree(catalogData);
+catalog.appendChild(NodeTree);
+window.bookLocation = book.locations;
+isReady = true;
+})</pre>
+<p>这个目录页的样式为方便起见，可以在catalog的类里统一实现</p>
+<p>这是电子书的开发的大概内容，当然还有很多可以延伸的地方，比如电子书的导入方式，电子书在浏览器的缓存和读取，电子书的样式和功能扩展。</p>
+	</div>
+  </div>
+  </div>
+	<script type="text/javascript" src="../../js/public.js"></script>
+  <script type="text/javascript" src="../../js/progress.js"></script>
+</body>
+</html>

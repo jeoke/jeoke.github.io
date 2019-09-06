@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>同构的介绍</title>
+  <meta name="keywords" content="react同构，react技术栈，react同构的完整思路"/>
+  <meta name="description" content="使用react相关技术栈实现的同构，包括路由同构，js事件处理同构，css样式同构，状态同构"/>
+	<link rel="stylesheet" type="text/css" href="../../css/public/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="../../css/public/nav.css">
+  <link rel="shortcut icon" href="../../img/avitar.png" type="image/ico">
+  <link rel="icon" sizes="192x192" href="../../img/avitar.png">
+  <link rel="apple-touch-icon" href="../../img/avitar.png">
+</head>
+<body>
+    <div class="nav-onOff nav-in">
+	 <button type="button" class="btn btn-default" aria-label="Left Align">
+       <span class="glyphicon glyphicon-align-left" aria-hidden="true"></span>
+       </button>
+    </div>
+	<div class="wrapper wrapper-animate">
+    <div class="nav-message">
+      	<nav class="nav nav-animate">
+        <img src="../../img/avitar.png" >
+            <button type="button" class="btn btn-default nav-right" aria-label="Left Align" >
+            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+            </button>
+       <ul class="list-group list-gap ">
+            <li type="button" class="list-group-item">
+               <a href="../../page/classify.html">文章分类<span class="badge">4</span></a>
+            </li>
+            <li type="button" class="list-group-item">
+               <a href="../../index.html"><span class="badge"></span>
+               实践列表</a>
+            </li>
+            <li type="button" class="list-group-item">
+               <a href="../../page/foundation.html"><span class="badge"></span>
+               基础知识</a>
+            </li>
+            <li type="button" class="list-group-item">
+               <span class="badge"></span>
+               进阶方向  ---待更新
+            </li>
+            <li type="button" class="list-group-item">
+               <span class="badge"></span>
+               node篇  ---待更新
+            </li>
+            <li type="button" class="list-group-item">
+               <span class="badge"></span>
+               其余工具分析篇  ---待更新
+            </li>
+        </ul>
+	    </nav>
+	</div>
+	</div>
+
+		<div class="progress rotate fiexd-pos">
+         <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45"      aria-valuemin="0" aria-valuemax="100" style="width: 0%">     
+            <span class="sr-only">阅读 100%</span>
+         </div>
+        </div>
+<div class="container">
+<div class="container box-shadow">
+<div class="scrollPos">
+<h1><strong>react-ssr同构</strong></h1>
+<h2>理解ssr——server-silde-rendering</h2>
+<p>如果需要理解服务端渲染技术，首先需要明白web 服务器的整个工作流程和技术发展</p>
+<h3>web服务的技术栈</h3>
+<p>常见的是lAMP 服务器是Linux系统，代理服务器是Apache，数据库是MySQL,后端web server的技术是perl,python,PHP等</p>
+<p>当然也有其他的技术栈，服务器是Linux,代理服务器是Nginx,数据库用MongDB,后端是Node.js,java等</p>
+<img src="./img/webStructor.png">
+<p>以上是web应用架构的图</p>
+<p>从用户在浏览器输入URI,比如，https:www.zhihu.com/a/404.html</p>
+<p>其中https是协议，www.zhihu.com是域名，服务器将域名解析到服务器的IP上，a是服务器资源请求的路径，404.html是该路径下的超文本文件。</p>
+<p>这时候，浏览器会通过https协议通过网络向域名绑定的Ip地址发起资源请求</p>
+<p>而如这张图所见，经过服务器时，首先是通过代理服务器这个软件</p>
+<p>而代理服务器的配置就决定了，代理服务器向域名挂载的只是静态资源还是web server,或者都有</p>
+<p>web server是使用语言对用户请求进行处理，也可以处理一些业务的逻辑，比如计算，比如数据库交互，比如读取文件系统的文件等，最后把相应的数据返回给浏览器，不同的语言有不同的处理流程</p>
+<h3>技术的发展</h3>
+<p><strong>第一阶段</strong></p>
+<P>服务器渲染</P>
+<p>这时，后端在接受浏览器的的资源请求时，利用模板引擎将处理过后的模板以一定的逻辑处理批量的返回渲染，并将其发给浏览器端，这个时候，脚本在静态资源代理里，在模板引擎的文件里添加对该路径的应用，在其他接口的地方处理资源请求。但是也有一些其他的技术。由于那时候js是一门脚本语言，没有ajax,所以有的时候有人更倾向与使用jsp,asp,.net等技术</p>
+<p>第二阶段，前后端分离</p>
+<p>后端的任务比较繁重，在大型应用里术业有专精，而且由于js虽然简单，但是在写复杂的交互时，由于其是弱类型语言，而且设计有很多容易忽略的地方，反直觉。而且交互的逻辑与后端其余业务逻辑的交叉其实并不大。所有后来提倡了前后端分离，即前端负责返回给用户的HTML，CSS,Javascript，用户数据使用js向后端接口进行请求，后端向前端返回数据。而后端跟前端就这样分开了，后端与js就像两个绝缘体。当然，还有其他一些更复杂的分类，比较交互设计，比如设计，如果复杂，更是职责分类的情况不同</p>
+<p>第三阶段</p>
+<p>这时候虽然js该有的都有了，但是太基础了，由于前端技术不断发展,各种与设计相关的框架，各种标准被提出，工程化，AMD,CMD,自动化打包，node.js，可复用的js组件式框架，于是，前端也开始向后端领域靠近，同构就是这些技术里开出的一朵小花</p>
+<p><strong>为什么要同构？</strong></p>
+<p><strong>因为SEO</strong>在浏览器向服务器请求资源时，网络爬虫会抓取URI返回的资源，但是ajax的数据会遗漏掉，而且经过前端js添加的DOM也会被网络爬虫忽略掉，如果网页数据是根据javascript请求进行填充，会损失以下权重</p>
+<ul>
+  <li>网页更新频率</li>
+  <li>网页结构的完整性</li>
+  <li>关于网络热点的内容</li>
+  <li>等</li>
+</ul>
+<h2>关于同构的内容</h2>
+<p>同构包含的技术分为以下几个方面：</p>
+<ul>
+  <li>路由同构</li>
+  <li>状态同构</li>
+  <li>css同构</li>
+  <li>js同构</li>
+</ul>
+<p>这篇文章使用的是react的技术栈，后端使用node.js搭了一个简单的中间件，并转发请求，负责处理路由的逻辑，数据是直接通过另开的web服务直接放入静态资源代理</p>
+<p>技术栈：webpack,express,react,react-router,react-router-config.redux,redux-thunk,react-helmet,axios</p>
+<p>下面是客户端webpack的配置</p>
+<pre>const HtmlWebpackPlugin = require('html-webpack-plugin'); 
+const webpack = require('webpack');
+const path = require('path');
+
+module.exports = {
+  entry: ["@babel/polyfill",'react-hot-loader/babel','./client/index.js'],
+  output: {
+      path: path.resolve(__dirname, 'statics'),
+      filename: 'react-client-ssr.js',
+      publicPath:'/'
+  },
+  module: {
+      rules: [
+        { test: /\.txt$/, use: 'raw-loader' },
+    {
+      test: /\.css?$/,
+      use: [
+        { loader: 'style-loader' },
+        {
+          loader: 'css-loader',
+          options: {
+            modules: true
+          }
+        }, 
+      {
+              loader: "sass-loader"
+            }
+      ]
+    },
+    {
+      test: /\.(png|jpg|gif)$/,
+      use: [
+        {
+          loader: 'url-loader',
+          options: {
+            limit: 8192
+          }
+        }
+      ]
+    },
+    {
+          test:/\.(woff|woff2|eot|ttf|otf)$/,
+          use:['url-loader']
+        },
+    {
+      test: /\.(js|jsx)$/,
+      exclude: /(node_modules|bower_components)/,   //不将node_modules打包
+      use: {
+        loader: 'babel-loader',
+        options: {
+          presets: [['@babel/preset-env',
+                    {
+                          targets:{
+                            edge: "17",
+                            firefox: "60",
+                            chrome: "67",
+                            safari: "11.1",
+                          }
+                        }],'@babel/preset-react'],
+        plugins: ["react-hot-loader/babel",
+                  "@babel/plugin-transform-runtime",
+                  "@babel/plugin-transform-async-to-generator",
+                  "@babel/plugin-transform-arrow-functions",
+                  "@babel/plugin-transform-destructuring",
+                  "@babel/plugin-transform-template-literals",
+                  "@babel/plugin-transform-classes",
+                        "@babel/plugin-transform-function-name",
+                        "@babel/plugin-transform-shorthand-properties"
+                  ]
+        }
+      }
+    }, 
+      ]
+    },
+  plugins: [
+      new HtmlWebpackPlugin({
+            title:'react-ssr',
+            favicon:path.resolve(__dirname,'statics/favicon.ico'),
+            template:path.resolve(__dirname,'./client/index.html'),
+            filename:'index.html',
+            inject:'body',
+            minify:{
+              collapseWhitespace:true,
+              removeComments:true,
+              removeAttributeQuotes:true
+            }
+       }),
+    ],
+  resolve:{
+      modules:['node_modules/'],
+      extensions:['.js','jsx','.json']
+  }
+};</pre>
+<p>以上是基础配置，由于本来打算配置基础配置后分为开发环境和产品环境分开测试，但是由于开发环境中的文件保存在内存中看不到，所以在配置了基础配置部分后，只配置了产品环境的配置，以下是产品环境的配置</p>
+<pre>const webpack = require('webpack');
+const path = require('path');
+const baseConfig = require('./webpack.base.js');
+const merge = require('webpack-merge');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+
+const developmentWk =  {
+    mode:'production',
+    target:'web',
+    optimization:{
+      minimize:true,
+      runtimeChunk:{
+        name:'vendor'
+      },
+      splitChunks:{            //合并模块
+        cacheGroups: {
+            default: false,
+            commons: {
+              test: /node_modules/,
+              name: "vendor",
+              chunks: "initial",    //不改变chunks
+              minSize: 1
+            }
+        }
+      }
+    },
+  plugins:[
+       new CleanWebpackPlugin(),
+       new webpack.HotModuleReplacementPlugin(),
+       new webpack.HashedModuleIdsPlugin(),
+       new ExtractTextPlugin({
+          filename: 'css/[name].css?[hash]-[chunkhash]-[name]',
+          allChunks: true,
+          disable: false,
+        })
+  ],
+};  
+module.exports = merge(baseConfig,developmentWk);</pre>
+<p>客户端配置完毕，可根据需要更改配置</p>
+<p>接下来是服务端的配置，由于使用了webpack-devServer,但是资源不是直接放在devServer配置的静态资源文件夹里，所以需要使用webpack-dev-middle更改一下，当然也可以直接在webpack-devServer的before方法里继续写</p>
+<p>以下是服务端的配置</p>
+<pre>const path = require('path');
+var nodeExternals = require('webpack-node-externals');   //在node环境里避免报错和警告的插件
+module.exports = {
+  target:'node',
+  externals: [nodeExternals()],
+  mode:'development',
+  entry: ["./server.js"],
+  output: {
+      filename: 'bundle.js',
+      path: path.resolve(__dirname, 'server')
+    },
+     module: {
+      rules: [{
+          test: /\.css?$/,
+          use: ['isomorphic-style-loader', {    //css同构解决的加载插件
+            loader: 'css-loader',
+            options: {
+              modules: true
+            }
+           }]
+        },
+        {
+      test: /\.(js|jsx)$/,
+      exclude: /(node_modules|bower_components)/,
+      use: {
+        loader: 'babel-loader',
+        options: {
+          presets: ['@babel/preset-env','@babel/preset-react'],
+        plugins: ["react-hot-loader/babel","@babel/plugin-transform-runtime","@babel/plugin-transform-async-to-generator","@babel/plugin-transform-arrow-functions","@babel/plugin-transform-destructuring","@babel/plugin-transform-template-literals","@babel/plugin-transform-classes","@babel/plugin-transform-function-name","@babel/plugin-transform-shorthand-properties","@babel/plugin-syntax-import-meta","@babel/plugin-syntax-dynamic-import",]
+       }
+    }
+    }]
+  },
+  node:{
+    fs:"empty",
+    net:"empty"
+  }
+};</pre>
+<p>在所有的步骤开始前，需要安装好相应插件和库</p>
+<h3>js同构</h3>
+<p>因为是服务端渲染，首先从服务端写起</p>
+<pre>const webpack = require('webpack');
+const webpackSer = require('./webpack.server.js');
+const compiler = webpack(webpackSer);
+const middleware = require('webpack-dev-middleware');
+const hotMiddleware = require("webpack-hot-middleware");
+const instance = middleware(compiler);
+const express = require('express')
+const app = express();
+app.use(hotMiddleware(compiler));
+app.use(express.static('./statics'));    //静态资源文件夹
+
+app.get('/', (req, res) => {
+  res.send(
+  `
+    <html>
+      <head>
+        <title>hello</title>
+      </head>
+      <body>
+        <h1>hello</h1>
+        <p>world</p>
+      </body>
+    </html>
+  `
+  )
+})
+
+</pre>
+<p>以上就是传统的服务器渲染</p>
+<p>现在开始react同构，使用react当作模板，渲染成字符串,先定义一个首页的组件</p>
+<pre>import React from 'react';
+const Home = () => {
+  return (
+    <div>
+      <div>This is sanyuan</div>
+    </div>
+  )
+}
+export default Home;
+</pre>
+<p>然后在server.js里，即web服务里引入组件，渲染成字符串</p>
+<pre>import React from 'react';
+import { renderToString }  from 'react-dom/server';
+
+const content = renderToString(&lt;Home /&gt;);
+app.get('/', function (req, res) {
+   res.send(
+   `
+    &lt;html&gt;
+      &lt;head&gt;
+        &lt;title&gt;ssr&lt;/title&gt;
+      &lt;/head&gt;
+      &lt;body&gt;
+        &lt;div id="root"&gt;${content}&lt;/div&gt;
+      &lt;/body&gt;
+    &lt;/html&gt;
+   `
+   );
+})
+app.listen(3000, () => {
+  console.log('listen:3000')
+})
+</pre>
+<p>现在，react已经是作为模板在使用了</p>
+<p>但是，这时候如果react的js文件里有事件绑定，在浏览器里不会生效，因为服务端不能执行javascript</p>
+<p>现在进行一个改造来深入理解js的同构</p>
+<pre>import React from 'react';
+const Home = () => {
+  return (
+    &lt;div&gt;
+      &lt;div&gt;This is sanyuan&lt;/div&gt;
+      &lt;button onClick={() => {alert('666')}}>click&lt;/button&gt;
+    &lt;/div&gt;
+  )
+}
+export default Home;</pre>
+<p>另外新建一个js,文件，这个文件负责对react的js"注水"</p>
+<pre>
+import React from 'react';
+.....    //引入Home组件
+const App = () => {
+  return (
+    &lt;div&gt;
+      &lt;Home/&gt;
+    &lt;/div&gt;
+  )
+}
+
+ReactDom.hydrate(&lt;App /&gt;, document.getElementById('root'))
+
+//由于在服务端返回的字符串不能执行该操作，那么就把客户端打包的js放入静态资源文件夹里，服务端加上
+//&lt;script type="text/javascript"&gt;&lt;/script&gt;,标签来引入静态资源文件夹里的js
+//这时候，需要运行package.json里配置的脚本，看下打包到静态资源文件夹里的文件名
+//这是package.json里的script配置
+
+  "scripts": {
+    "start:client": "webpack --config webpack.pro.js --watch",
+    "start:server": "webpack --config webpack.server.js --watch",
+    "build:serverSlide": "node ./server-slide/server-slide.js",
+    "build:begin": "node ./server/bundle.js",
+    "run": "npm-run-all --parallel build:**",
+    "begin": "npm-run-all --parallel start:**"
+  }
+//npm-run-all是可以并行运行Node脚本的npm包
+//当然还有其他方式可以操作
+//下面是server.js的更行
+import React from 'react';
+import { renderToString }  from 'react-dom/server';
+
+const content = renderToString(&lt;Home /&gt;);
+app.get('/', function (req, res) {
+   res.send(
+   `
+    &lt;html&gt;
+      &lt;head&gt;
+        &lt;title&gt;ssr&lt;/title&gt;
+      &lt;/head&gt;
+      &lt;body&gt;
+        &lt;div id="root"&gt;${content}&lt;/div&gt;
+      &lt;/body&gt;
+    &lt;/html&gt;
+    &lt;script type="text/javascript"&gt;&lt;/script&gt; //另外还需要带src属性，引入相应的js
+   `
+   );
+})
+app.listen(3000, () => {
+  console.log('listen:3000')
+})
+</pre>
+<p>如果这时候代码是没问题的，再次打包之后运行，在浏览器端输入URI,点击，js事件是可以执行的</p>
+<h2>路由同构</h2>
+<p>js在浏览器端可以执行，服务器端可以包含在字符串里了，之后的三个同构的目标，剩下的看看只能完成的是路由了，当路由构建完毕后，所有的状态才可以同步</p>
+<p>在根目录下新建一个route.js.下面是简单的路由的文件</p>
+<pre>import React from 'react';
+import {Route} from 'react-router-dom'
+import Home from './containers/Home';
+import Login from './containers/Login'
+
+export default (
+  &lt;div&gt;
+    &lt;Route path='/' exact component={Home}&gt;&lt;/Route&gt;
+    &lt;Route path='/login' exact component={Login}&gt;&lt;/Route&gt;
+  &lt;/div&gt;
+)
+</pre>
+<p>然后是客户端和服务端的分别配置</p>
+<pre>
+//客户端
+import React from 'react';
+import ReactDom from 'react-dom';
+import { BrowserRouter } from 'react-router-dom'
+import Routes from '../route.js'
+//BrowserRouter是客户端组件的外层组件，控制路由的跳转
+const App = () => {
+  return (
+    &lt;BrowserRouter&gt;
+      {Routes}
+    &lt;/BrowserRouter&gt;
+  )
+}
+ReactDom.hydrate(<App />, document.getElementById('root'));
+//服务器端
+import express from 'express';
+import {render} from './utils';
+
+const app = express();
+app.use(express.static('public'));
+//注意这里要换成*来匹配
+app.get('*', function (req, res) {
+   res.send(render(req));
+});
+
+app.listen(3001, () => {
+  console.log('listen:3001')
+});
+// server/utils.js
+import Routes from '../Routes'
+import { renderToString } from 'react-dom/server';
+//服务器端静态路由的使用：StaticRouter
+import { StaticRouter } from 'react-router-dom'; 
+import React from 'react'
+
+export const render = (req) => {
+  //构建服务端的路由跳转
+  const content = renderToString(
+    &lt;StaticRouter location={req.path} >  //根据请求的路由path，返回相应的组件，并使组件同步
+      {Routes}
+    &lt;/StaticRouter>
+  );
+  return `
+    &lt;html&gt;
+      &lt;head&gt;
+        &lt;title&gt;ssr&lt;/title&gt;
+      &lt;/head&gt;
+      &lt;body&gt;
+        &lt;div id="root"&gt;${content}&lt;/div&gt;
+        &lt;script src="/index.js"&gt;&lt;/script&gt;
+      &lt;/body&gt;
+    &lt;/html&gt;
+  `
+}
+</pre>
+<p>到这里，基本的路由同构已经完成但是只限于第一层路由，深层的路由没有办法跳转</p>
+<p>接下来先对路由进行改造,使用react-router-config</p>
+路由文件的改写
+<pre>import React from 'react';
+import {Route} from 'react-router-dom'
+import Home from './client/containers/Home/Home.js';
+import Login from './client/containers/Login/Login.js'
+import App from './App.js'
+export default [{
+  path:'/',
+  component:App,
+  routes: [{
+    path:'/',
+    component:Home,
+    exact:true,
+    key:'home'
+  },
+  {
+    path:'/login',
+    component:Login,
+    exact:true,
+    key:'login'
+  }]
+}]
+//客户端路由的改写
+import React from 'react';
+import ReactDom from 'react-dom';
+import {BrowserRouter, Route} from 'react-router-dom';
+import routes from '../route.js';
+import { renderRoutes } from 'react-router-config';
+const App = () => {
+  return (
+      &lt;BrowserRouter&gt;
+        {renderRoutes(routes)}
+      &lt;/BrowserRouter&gt;
+  )
+}
+
+ReactDom.hydrate(<App />, document.getElementById('root'));
+//服务端路由的改写，ulit.js
+import Routes from '../route.js'
+import { renderToString } from 'react-dom/server';
+import { StaticRouter } from 'react-router-dom'; 
+import { Provider } from 'react-redux';
+import React from 'react';
+import { getServerStore } from '../store/store.js';
+import { renderRoutes } from 'react-router-config';
+
+export const render = (routes,req) => {
+  const content = renderToString(
+     &lt;StaticRouter location={req.path}&gt;
+        {renderRoutes(Routes)}
+     &lt;/StaticRouter&gt;
+  );
+
+  return  `
+       &lt;html&gt;
+          &lt;head&gt;
+            &lt;title&gt;ssr&lt;/title&gt;
+          &lt;/head&gt;
+          &lt;body&gt;
+            &lt;div id="root"&gt;${content}&lt;/div&gt;
+          &lt;/body&gt;
+          &lt;script type="text/javascript" src="/index.js"&gt;&lt;/script&gt;
+       &lt;/html>
+    `
+}
+//server.js
+import { render } from './dist/util.js';
+import { matchRoutes } from 'react-router-config';
+import routes from './route.js';
+app.get('*', function (req, res) {
+    const html = render(routes,req);
+}
+</pre>
+<p>路由的改造完成了，路由基本跳转基本完成，服务器端和客户端都能完成跳转。整个同构的一小部分完成了</p>
+<p>剩下的就是难点：状态同构</p>
+<h3>状态同构</h3>
+<p>状态管理是react的难点部分，因为他的全局状态管理是用的redux管理，使用react另外封装的响应式全局管理，仅使用react内部的API,不像vuex是自己内部实现的。初学的时候由于react简单而另外的实现有些晦涩，对比起来就有些不适。而与服务器端的状态管理的同构实现就更加需要良好的基础</p>
+<p>以下是客户端的实现，需要redux,redux-thunk(发送ajax请求)</p>
+<pre>//在HOME组件目录下分别新建四个文件，action.js,contants.js,reduce.js,index.js
+contants.js --->  负责action,即动作的声明
+action.js  --->  负责相应动作和状态的对象，或者函数 (如果有ajax请求，函数为发送请求后分初始化状态，并分发动作的函数，最后的对象即为一个action)
+reducer.js ---> 根据不同动作改变状态的reducer函数
+index.js --->   管理输出该页面的reducer
+
+以下是代码。。
+export const CHANGE_LIST = 'CHANGE_LIST';  //contants.js
+//action.js
+import { CHANGE_LIST } from "./constants";
+import axios from 'axios';
+
+const changeList = list => ({
+  type: CHANGE_LIST,
+  list
+})
+
+export const getHomeList = () => {
+  return (dispatch,getState,axiosInstance) => {
+    return axiosInstance.get('news.json').then((res) => {
+        const list = res.data.data;
+        dispatch(changeList(list))
+      })
+  }
+}
+
+//reducer.js
+import { CHANGE_LIST } from "./constants";
+
+const defaultState = {
+  name: 'ssr',
+  list: []
+}
+
+export default (state = defaultState, action) => {
+  switch(action.type) {
+    case CHANGE_LIST:
+      const newState = {
+        ...state,
+        list: action.list
+      }
+      console.log(newState)
+      return newState
+    default:
+      return state;
+  }
+}
+
+//index.js
+import reducer from './reducer.js';
+export { reducer };
+
+//Home.js
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { getHomeList } from './store/action.js'
+import styles from './css/home.css';
+import WithStyle from '../../../withStyle';
+import { Helmet } from 'react-helmet';
+
+class Home extends Component {
+  getLists(){
+     const { list } = this.props
+     return list.map(item => &lt;div key={item.id}&gt;{item.title}&lt;/div&gt;)        
+  }
+  componentDidMount() {
+    if (!this.props.list.length) {
+       this.props.getList();
+     }
+  }
+  render() {
+    return(
+        &lt;&gt;   //用来处理没有返回值的组件
+        &lt;div&gt;
+        &lt;div&gt;aaaaaa&lt;/div&gt;
+          {this.props.list.length !==0?this.getLists():null}
+        &lt;/div&gt;
+        &lt;/&gt;
+    )
+  }
+}
+const mapStateToProps = state => ({           //redux的使用，即容器组件的使用
+  list: state.home.list,
+})
+
+const mapDispatchToProps = dispatch => ({
+    getList() {
+      dispatch(getHomeList());
+    }
+})
+const exportHome = connect(mapStateToProps, mapDispatchToProps)(Home);
+
+exportHome.loadData = (store) => {    //loadData用来处理服务端获取的store
+  return store.dispatch(getHomeList())
+};
+export default exportHome;
+
+//最外层的store.js
+import { createStore, applyMiddleware ,combineReducers } from 'redux';
+import thunk from 'redux-thunk';
+import { reducer as homeReducer } from '../client/containers/Home/store/index.js';
+
+const reducers = combineReducers({    //合并reducer,使所有组件状态同步
+  home:homeReducer
+})
+const getClientStore = () => {
+  const defaultState = window.context ? window.context.state : {};  //传入默认状态，接受服务端的store,但是还是会请求，进行数据比对
+  return createStore(reducers,defaultState,applyMiddleware(thunk.withExtraArgument(clientAxios)));  //这里的withExtraArgument是传入action.js里函数额外的参数
+} 
+const getServerStore = () => {
+  return createStore(reducers,{}, applyMiddleware(thunk.withExtraArgument(serverAxios)));
+}
+
+export { getClientStore,getServerStore };
+
+//index.js
+import React from 'react';
+import ReactDom from 'react-dom';
+import {BrowserRouter, Route} from 'react-router-dom';
+import { Provider } from 'react-redux';
+import  getClientStore from '../store/store.js';
+import routes from '../route.js';
+import { renderRoutes } from 'react-router-config';
+const App = () => {
+  return (
+    &lt;Provider store={getClientStore()}&gt;
+      &lt;BrowserRouter&gt;
+        {renderRoutes(routes)}
+      &lt;/BrowserRouter&gt;
+    &lt;/Provider&gt;
+  )
+}
+
+ReactDom.hydrate(&lt;App /&gt;, document.getElementById('root'))
+
+//服务端
+import proxy from 'express-http-proxy';  //中间件代理
+
+app.use('/api', proxy('http://localhost:4000', {  //代理请求，转发到指定服务器或者端口
+  proxyReqPathResolver: function(req) {
+    return req.url;
+  }
+}));
+import React from 'react';
+import { renderToString }  from 'react-dom/server';
+import { render } from './dist/util.js';
+import { matchRoutes } from 'react-router-config';
+import routes from './route.js';
+import { getServerStore } from './store/store.js';
+
+app.get('*', function (req, res) {
+   const store = getServerStore();
+   const matchedRoutes = matchRoutes(routes,req.path);
+   const promises = [];
+   matchedRoutes.forEach(item => {
+     if (item.route.loadData) {
+         const promise = new Promise((resolve, reject) => {   //捕获route的loadData函数，先加载store,使store发生改变
+        item.route.loadData(store).then(resolve).catch(resolve);
+      })
+         promises.push(promise);
+     }
+   });
+
+   Promise.all(promises).then(()=>{
+        const html = render(store,routes,req);
+        res.send(html);
+   })
+});
+//由于有客户端和服务端有不同axios请求的基础URL,所以需要在客户端文件夹和服务端文件夹加上request.js在store里引入并传入
+//客户端request.js
+import axios from 'axios';
+var instance = axios.create({
+                 baseURL: '/api/',
+                 timeout: 1000
+               });
+export default instance;
+
+//服务端request.js
+import axios from 'axios';
+
+const instance = axios.create({
+             baseURL: 'http://localhost:4000/',
+});
+export default instance;
+
+//对于route.js也需要进行改造
+import React from 'react';
+import {Route} from 'react-router-dom'
+import Home from './client/containers/Home/Home.js';
+import Login from './client/containers/Login/Login.js'
+import App from './App.js'
+export default [{
+  path:'/',
+  component:App,     //这里是公共组件
+  routes: [{
+    path:'/',
+    component:Home,
+    exact:true,
+    loadData:Home.loadData, //这里！！！
+    key:'home'
+  },
+  {
+    path:'/login',
+    component:Login,
+    exact:true,
+    key:'login'
+  }]
+}]
+
+//App.js
+import React from 'react';
+import Header from './client/components/Header';
+import { renderRoutes } from 'react-router-config';
+
+const App = (props) => {
+  return (
+         &lt;div&gt;
+           &lt;Header&gt;&lt;/Header&gt;
+           { renderRoutes(props.route.routes) } //renderRoutes的使用会传入props,里面是下一层的route
+         &lt;/div&gt; 
+    )
+}
+
+export default App;
+
+//util.js  //渲染路由和provider状态管理的部分从主要的server.js分离开
+import Routes from '../route.js'
+import { renderToString } from 'react-dom/server';
+import { StaticRouter } from 'react-router-dom'; 
+import { Provider } from 'react-redux';
+import React from 'react';
+import { getServerStore } from '../store/store.js';
+import { renderRoutes } from 'react-router-config';
+
+
+export const render = (store,routes,req) => {
+  const content = renderToString(
+      &lt;Provider store={store}&gt;
+      &lt;StaticRouter location={req.path}&gt;
+        {renderRoutes(Routes)}
+      &lt;/StaticRouter&gt;
+    &lt;/Provider&gt;
+  );
+
+  return  `
+        &lt;html&gt;
+           &lt;head&gt;
+            &lt;title&gt;react-ssr&lt;/title&gt;
+           &lt;/head&gt;
+           &lt;body&gt;
+             &lt;div id="root"&gt;${content}&lt;/div&gt;
+           &lt;/body&gt;
+           &lt;script&gt;
+              window.context = {
+                state: ${JSON.stringify(store.getState())}   //将store挂到widow.context,有就从客户端或从服务端留存
+              }
+           &lt;/script&gt;
+           &lt;script type="text/javascript" src="index.js"&gt;&lt;/script&gt;
+        &lt;/html&gt;
+    `
+}
+
+</pre>
+<p>状态同构已经完成，这里面有很多需要注意的东西，比如客户端和服务端请求store数据的分离，比如loadData,服务端获取相应store的方法，比如router公共组件的使用，比如redux的使用</p>
+<p>接下来是css的同构</p>
+<h3>css同构</h3>
+<p>这里要记得前面配置的isomorphic-style-loader</p>
+<p>import styles from './style.css';当这样的代码出现在页面种时，isomorphic-style-loader会在styles挂载3个函数</p>
+<ul>
+  <li>_getContent</li>
+  <li>_getCss</li>
+  <li>_insertCss</li>
+</ul>
+<p>在客户端直接引入css是不影响的，那么服务器端怎么引入css?</p>
+<p>1.可以直接使用css in js</p>
+<p>这里是判断环境，将css挂载到组件的context上</p>
+<pre>Promise.all(promises).then(()=>{
+        let context = {css: []};    //服务端先初始化context对象声明css
+        const html = render(store,routes,req,context);   //传入渲染
+        res.send(html);
+   })
+
+//util.js
+export const render = (store,routes,req,context) => {
+  const content = renderToString(
+      &lt;Provider store={store}&gt;
+      &lt;StaticRouter location={req.path} context={context} &gt;
+        {renderRoutes(Routes)}
+      &lt;/StaticRouter&gt;
+    &lt;/Provider&gt;
+  );
+
+  const cssStr = context.css.length ? context.css.join('\n') : '';
+  return  `
+        &lt;html&gt;
+           &lt;head&gt;
+           &lt;style&gt;${cssStr}&lt;/style&gt;  //插入style标签
+           &lt;/head&gt;
+           &lt;body&gt;
+             &lt;div id="root"&gt;${content}&lt;/div&gt;
+           &lt;/body&gt;
+          ............以下代码不变
+          ............
+    `
+}
+
+//组件里
+  componentDidMount() {
+    if (!this.props.list.length) {
+       this.props.getList();
+     }
+    if (this.props.staticContext) {    //staticContext
+       this.props.staticContext.css.push(styles._getCss())  //判断是否是服务器端环境,react-router提供的props属性
+    }
+  }
+//组件里这段代码可以用高阶组件封装，包裹，利用函数批量添加
+import React,{ Component } from 'react';
+
+export default (DecoratedComponent,styles)=>{
+  return class NewComponent extends Component{
+    ComponentWillMount(){
+      if(this.props.staticContext){
+        this.props.staticContext.css.push(styles._getCss());
+      }
+    }
+    render(){
+      return &lt;DecoratedComponent {...this.props}/&gt;
+    }
+  }
+}
+//在组件里，引入上述高阶组件方法，这里是WithStyle
+const exportHome = connect(mapStateToProps, mapDispatchToProps)(WithStyle(Home,styles));
+</pre>
+<p>css同构结束了，主要是服务端的css如何引入的问题</p>
+<h3>最后的SEO优化</h3>
+<p>react-helmet引入该插件，可以在不同的组件即页面插入不同的title,description</p>
+<pre>//代码如下
+//组件里
+import { Helmet } from 'react-helmet';
+<Helmet>
+    <title>这是一个react同构技术栈的实践</title>
+    <meta name='description' content="React-ssr项目" />
+ </Helmet>
+
+//util.js
+import { Helmet } from 'react-helmet';
+const helmet = Helmet.renderStatic();
+     
+//在返回的字符串里插入
+${helmet.title.toString()}
+${helmet.meta.toString()}
+</pre>
+<p>最后一步：</p>
+<p>开启主web server,以下是简化版，一般是存储到数据库中，从数据库中搜索返回</p>
+<pre>const express = require("express")
+const app = express()
+
+app.use(express.static('./server-slide/api'));
+app.listen(4000, () => {console.log('running 4000')})</pre>
+<p>同构至此完成</p>
+<p><strong>很感谢知乎神三元的文章。</strong>
+</p>
+<p>这些实现是跟随以下这篇文章逐渐实现，以下是连接地址</p>
+<p>链接：https://zhuanlan.zhihu.com/p/76967335</p>
+<p>以下是react的参考文章，阮一峰老师的博客</p>
+<p>http://www.ruanyifeng.com/blog/2016/09/redux_tutorial_part_three_react-redux.html</p>
+</div>
+  </div>
+  </div>
+	<script type="text/javascript" src="../../js/public.js"></script>
+  <script type="text/javascript" src="../../js/progress.js"></script>
+</body>
+</html>

@@ -1,0 +1,130 @@
+body{
+   overflow: hidden;
+}
+.nav-bar{
+	position: fixed;
+	top:40%;
+	margin-right:-30px;
+}
+#nav-bar{
+	position: fixed;
+	bottom:40%;
+	right: 20px;
+	width: auto;
+	height: 50px;
+	list-style: none;
+}
+#nav-bar li{
+	margin: 5px;
+	display: block;
+	width: 10px;
+	height: 10px;
+	border-radius: 50% 50%;
+	border:1px solid black;
+}
+.marketing .col-xs-6 {
+    margin-bottom: 20px;
+    text-align: center;
+}
+.jumbotron-top{
+	margin-top:10px;
+}
+#controller-bar{
+    z-index: 2;
+	position: fixed;
+	right: 20px;
+    bottom:40%;
+}
+#controller-bar li{
+    cursor: pointer;
+	width: 15px;
+    height: 15px;
+    margin-top:10px;
+    border: 1px solid black;
+    border-radius: 50% 50%;
+    list-style: none;
+}
+#controller-bar li:first-child{
+	background-color: black;
+}
+.full-page .gap{
+	margin-top: 20px;
+}
+.bottom-gap{
+	padding-top: 100px;
+}
+.full-page{
+	position:relative;
+    top: 0;
+    left: -100%;
+    transition:transform 0.38s ease 0s;
+}
+.page-show{
+	transform: translate(100%,100%);
+	z-index:1;
+}
+
+@media (max-width: 768px){
+.page-top{
+	top: -2034px;
+}
+.page-center{
+	top: -1201px;
+}
+.page-bottom{
+	top: -448px;
+}
+.screen-lm{
+	display: none;
+}
+.full-page{
+	left: -98.7%;
+}
+}
+
+@media (min-width: 768px) and (max-width: 992px) { 
+.page-top{
+	top: -2070px;
+
+}
+.page-center{
+	top: -1260px;
+}
+.page-bottom{
+	top: -533px;
+}
+.screen-min{
+	display: none;
+}
+}
+
+
+@media (min-width: 992px) and (max-width: 1200px) { 
+.page-top{
+	top: -1930px;
+
+}
+.page-center{
+	top: -1919px;
+}
+.page-bottom{
+	top: -514px;
+}
+.screen-mid{
+	display: none;
+}
+}
+
+@media (min-width: 1200px) { 
+
+.page-top{
+	top:-2588px;
+}
+.page-center{
+	top: -1625px;
+}
+.page-bottom{
+	top: -800px;
+}
+
+}

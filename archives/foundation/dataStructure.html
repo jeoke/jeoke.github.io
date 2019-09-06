@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>javascript关于数据结构和算法介绍</title>
+  <meta name="keywords" content="javascript基础算法，javascript数据结构实现，javascript基础轮子"/>
+  <meta name="description" content="JavaScript所有基本数据结构的实现，无BUG,可以完全跑通，JavaScript算法的所有基本原理和算法实现，无BUG，完全可以跑通，可以作为完整的参考"/>
+
+	<link rel="stylesheet" type="text/css" href="../../css/public/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="../../css/public/nav.css">
+  <link rel="shortcut icon" href="../../img/avitar.png" type="image/ico">
+  <link rel="icon" sizes="192x192" href="../../img/avitar.png">
+  <link rel="apple-touch-icon" href="../../img/avitar.png">
+</head>
+<body>
+    <div class="nav-onOff nav-in">
+	 <button type="button" class="btn btn-default" aria-label="Left Align">
+       <span class="glyphicon glyphicon-align-left" aria-hidden="true"></span>
+       </button>
+    </div>
+	<div class="wrapper wrapper-animate">
+    <div class="nav-message">
+      	<nav class="nav nav-animate">
+        <img src="../../img/avitar.png">
+            <button type="button" class="btn btn-default nav-right" aria-label="Left Align" >
+            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+            </button>
+        <ul class="list-group list-gap ">
+            <li type="button" class="list-group-item">
+               <a href="../../page/classify.html">文章分类<span class="badge">4</span></a>
+            </li>
+            <li type="button" class="list-group-item">
+               <a href="../../index.html"><span class="badge"></span>
+               实践列表</a>
+            </li>
+            <li type="button" class="list-group-item">
+               <a href="../../page/foundation.html"><span class="badge"></span>
+               基础知识</a>
+            </li>
+            <li type="button" class="list-group-item">
+               <span class="badge"></span>
+               进阶方向  ---待更新
+            </li>
+            <li type="button" class="list-group-item">
+               <span class="badge"></span>
+               node篇  ---待更新
+            </li>
+            <li type="button" class="list-group-item">
+               <span class="badge"></span>
+               其余工具分析篇  ---待更新
+            </li>
+        </ul>
+	    </nav>
+	</div>
+	</div>
+
+		<div class="progress rotate fiexd-pos">
+         <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45"      aria-valuemin="0" aria-valuemax="100" style="width: 0%">     
+            <span class="sr-only">阅读 100%</span>
+         </div>
+        </div>
+<div class="container">
+<div class="container box-shadow">
+<div class="scrollPos">
+<h1><strong>javascript数据结构及算法</strong></h1>
+<h2>JavaScript数据结构</h2>
+<p>数据结构是通用得：数据结构定了数据存取的方式，这是一种模式的抽象。</p>
+<p>以下是常见的数据结构：</p>
+<ul>
+  <li>数组</li>
+  <li>列表</li>
+  <li>队列</li>
+  <li>栈</li>
+  <li>字典</li>
+  <li>散列</li>
+  <li>集合</li>
+  <li>链表</li>
+  <li>二叉树</li>
+  <li>图</li>
+</ul>
+<p>这些都是常用的数据结构，下面介绍这些常用数据结构的实现</p>
+<h2>数组</h2>
+<p>对数组的应用有二维数组,对象里的数组，数组对象</p>
+<p>下面是二维数组</p>
+<pre>function createMatrix(rows,cols,initial){
+   var twod=[];
+   for (var i = 0; i < rows; ++i) {
+       twod[i]=[];
+       for (var j = 0; j < cols; ++j) {
+        twod[i][j]=initial;
+       }
+   }
+   return twod;
+}
+var matrix = createMatrix(4,3,"jeoke");
+console.log(matrix);
+ {
+   arrText:[]       //对象里的数组
+ }
+[{},{}]    //数组对象
+</pre>
+<p>以上是规则的二维数组和对象，数组的一个小例子，这是所有数据结构的基础</p>
+<h2>数据结构</h2>
+<h3>列表</h3>
+<p>首先先构思列表需要的要素，存储单位，长度，插入，删除，清空，位置，移动位置，最前，最后,位置元素的数据</p>
+<pre>function List(){
+  this.dataStore = [];
+  this.listSize = 0;
+  this.pos = 0;
+  this.length = length;
+  this.insert = insert;
+  this.append = append;
+  this.remove = remove;
+  this.getElement = getElement;
+  this.prev = prev;
+  this.next = next;
+  this.front = front;
+  this.end = end;
+  this.moveTo = moveTo;
+  this.find = find;
+  this.clear = clear;
+  this.toListString = toListString;
+  this.contains = contains;
+}</pre>
+<p>然后是方法的实现</p>
+<pre>function append(element){
+  this.dataStore[this.listSize++] = element;
+}
+
+function find(element){
+  for (var i = 0; i < this.listSize; i++) {
+    if(element == this.dataStore[i]){
+      return i;
+    }
+  }
+  return -1;
+}
+
+function remove(element){
+    var findAt = this.find(element);
+    if(findAt > -1){
+      this.splice(findAt,1);
+      --this.listSize;
+      return true;
+    }
+    return false;
+}
+
+function length(){
+  return this.listSize;
+}
+
+function toListString(){
+  return this.dataStore;
+}
+
+function insert(element,after){
+    var insertPos = this.find(after);
+    if(insert > -1){
+      this.dataStore.splice(insertPos+1, 0, element);
+        ++this.listSize;
+        return true;
+    }
+    return false;
+}
+
+function contains(element){
+  for (var i = 0; i < this.listSize; i++) {
+    if (this.dataStore[i]==element) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function front(){
+  this.pos = 0;
+}
+
+function end(){
+  this.pos = this.listSize-1;
+}
+
+function prev(){
+  if(this.pos>0){
+    --this.pos
+  }
+}
+
+function next(){
+  if(this.pos < this.listSize-1){
+    ++this.pos;
+  }
+}
+
+function moveTo(position){
+     this.pos = position;
+}
+
+function getElement() {
+  return this.dataStore[this.pos];
+}
+
+function clear () {
+    this.dataStore = [];
+    this.listSize = 0;
+    this.pos = 0;
+}
+var thing = new List(); //新的数据类型
+thing.append("jeoke");
+console.log(thing.toListString());
+thing.clear();
+console.log(thing.getElement());</pre>
+<h3>队列</h3>
+<p>首先是确定队列数据结构需要的定义的元素，队列长度，先出，后进，获取最前面的元素，和最后面的元素，清空等</p>
+<pre>function Queue () {
+  this.length = length;
+  this.dataStore = [];
+  this.enqueue = enqueue;
+  this.dequeue = dequeue;
+  this.front = front;
+  this.back = back;
+  this.empty =empty;
+  this.clear = clear;
+  this.toQueueString = toQueueString;
+}</pre>
+<p>下面是方法的实现</p>
+<pre>function length(){
+  return this.dataStore.length;
+}
+function enqueue(element){
+    this.dataStore.push(element);
+}
+function dequeue(){
+    return this.dataStore.shift();
+}
+function front() {
+  return this.dataStore[0];
+}
+function back() {
+  return this.dataStore[length-1]; 
+}
+function empty(){
+  if(this.dataStore.length == 0){
+    return true;
+  }else{
+    return false;
+  }
+}
+function clear(){
+  this.dataStore = [];
+}
+function toQueueString(){
+  var restr = "";
+  for(var i=0,length=this.dataStore.length;i < length;i++){
+    restr += this.dataStore[i] + "\n"
+  }
+  return restr;
+}
+var textQueue = new Queue();
+textQueue.enqueue("jeoke");
+textQueue.enqueue("jeokaren");
+console.log(textQueue.toQueueString());
+console.log(textQueue.length());</pre>
+<h3>栈</h3>
+<p>栈式后进后出的数据结构，需要确定是，长度，出栈，入栈方法，栈顶元素，栈高度，是否为空等</p>
+<pre>function Stack() {
+   this.dataStore = [];
+   this.push = push;
+   this.pop = pop;
+   this.peek = peek;
+   this.top = 0;
+   this.length = length;
+}</pre>
+<p>方法的实现</p>
+<pre>function push(element){
+    this.dataStore[this.top++] = element;
+}
+function pop(){
+  return this.dataStore[--this.top];
+}
+function peek(){
+  return this.dataStore[this.top-1];
+}
+function clear(){
+    this.top = 0;
+}
+function length(){
+  return this.top;
+}</pre>
+<h3>字典</h3>
+<p>字典的特点是按值存取，需要定义的是添加，查找，删除，展示</p>
+<pre>function Dictionary(){
+  this.dataStore = [];
+  this.add = add;
+  this.find = find;
+  this.remove = remove;
+  this.showAll = showAll;
+}</pre>
+<p>方法的实现，<strong>注意:</strong>字典是以键值对的方式存储的</p>
+<pre>function add (key,value) {
+  this.dataStore[key]=value;
+}
+
+function find(key){
+  return this.dataStore[key];
+}
+
+function remove(key){
+  delete this.dataStore[key];
+}
+
+function showAll () { 
+  for(var i in this.dataStore){
+    console.log(i + ':' + this.dataStore[i]);
+  }
+}
+var newDictionary = new Dictionary();
+    newDictionary.add("a","d");
+    newDictionary.add("c","f");
+    newDictionary.showAll();</pre>
+<p>在字典之后是散列</p>
+<h3>散列</h3>
+<p>散列的特点是，一个值能够自动生成键值，缺点：一键对多值(碰撞)</p>
+<pre>function HashTable() {
+  this.table = new Array(137);
+  this.simpleHash = simpleHash;
+  this.showDistro = showDistro;
+  this.put = put;
+  this.get = get;
+}
+function simpleHash(data) {
+  var total = 0;
+    var Hash = 37;
+    for (var i = 0,length = data.length; i < length; i++) {
+        total = Hash*total + data.charCodeAt(i);
+      }
+      console.log(this.table.length);
+      total = total % this.table.length;
+    return parseInt(total);    //计算哈希值
+}
+        
+function showDistro(){
+    for (var i = 0,length = this.table.length; i < length; i++) {
+      if(!(this.table[i] == undefined)){
+        console.log(i + ":" + this.table[i]);
+            console.log(this.table);
+      }
+    }
+}
+        
+function put(data) {
+   var total = simpleHash(data);
+   this.table[total] = data;
+}
+        
+function get(data) {
+  for (var i = 0,length = this.table.length; i < length; i++) {
+    if(this.table[i] == data){
+      console.log(i + ":" + this.table[i]);
+    }
+  }
+}
+        
+var textTable = new HashTable();
+textTable.put("jeoke");
+textTable.get("jeoke");
+textTable.showDistro();
+</pre>
+<p><strong>注意：</strong>在上面提到的碰撞时指存储值得计算不一样，导致再次存储得时候，数据丢失</p>
+<p>所以这个散列是不完整的</p>
+<p>有两种解决办法，开链法和线性探测法</p>
+<h4>开链法</h4>
+<p>即：存储的时候，行存键值，列存数据，计算的hash值不变</p>
+<pre>function HashTable() {
+  this.table = new Array(137);
+  this.betterHash = betterHash;
+  this.showDistro = showDistro;
+  this.buildChains = buildChains;
+  this.put = put;
+  this.get = get;
+}
+
+function betterHash (data) {
+  const H = 37;
+  var total = 0;
+  for(var i = 0,len = data.length; i < data.length; i++){
+    total += H*total + data.charCodeAt(i);
+  }
+  total = total % this.table.length;
+  if(total < 0){
+    total += this.table.length-1;
+  }
+  return parseInt(total);
+}
+
+function buildChains () {
+  for (var i = 0,len=this.table.length; i < len; i++) {
+    this.table[i] = new Array();
+  }
+}
+
+function put (key,data) {          //存储的时候，使用二维数组存储，行存键值，列存数据，
+  var pos = this.betterHash(key);
+  var index = 0;
+  if(this.table[pos][index] == undefined){
+    this.table[pos][index] = data;
+      ++index;
+    } 
+    else{
+      while (this.table[pos][index] != undefined) {
+        ++index
+      }
+      this.table[pos][index] = data;
+    }
+}
+
+function showDistro () {
+  for (var i = 0,len = this.table.length;i < len;i++) {
+          if (this.table[i][0]!=undefined) {
+            console.log(i + ":" + this.table[i]);
+          }
+  }
+}
+
+function get (key) {
+  var index = 0;
+  var pos = this.betterHash(key);
+  if(this.table[pos][index] != undefined){
+    return this.table[pos];
+  }
+  else{
+      return undefined; 
+  }
+  
+}
+
+var hashTable = new HashTable();
+
+hashTable.buildChains();
+hashTable.put("css","css");
+hashTable.put("cssd","css");
+hashTable.put("css","css");
+hashTable.showDistro();
+hashget = hashTable.get("css");
+console.log(hashget);</pre>
+<h4>线性探测法</h4>
+<p>线性探测法，也叫开放寻址散列方法</p>
+<p>即使用两个数组，键值数组，值数组。计算键的hash值，但是保留键值，将hash值加1存储，取得时候直到找到对应得键值</p>
+<pre>function Table () {
+  this.simpleHash = simpleHash;
+  this.value = [];
+  this.table = [];
+  this.put = put;
+  this.showDistro = showDistro;
+  this.get = get;
+}
+
+function simpleHash (key) {
+  var total=0;
+  var hash = 37;
+  for (var i = 0,len = key.length; i < key.length; i++) {
+      total = hash * total + key.charCodeAt(i);
+  }
+  total %= len;
+  return parseInt(total);
+}
+
+function put (key,data) {
+  var pos = this.simpleHash(key);
+  var index = 0;
+  if (this.table[pos] == undefined) {
+    this.table[pos] = key;
+    this.value[pos] = data; 
+  }else{
+    while (this.table[pos] != undefined) {
+      ++pos;
+    }
+    this.table[pos] = key;
+    this.value[pos] = data;
+  }
+}
+
+function get (key) {
+  var pos = this.simpleHash(key);
+  while(this.table[pos] != undefined){
+  if(this.table[pos] == key){
+    console.log(key + ":" + this.value[pos]);
+  }
+  pos++;
+  }    
+}
+
+function showDistro () {
+  for (var i = 0,len = this.table.length; i < len; i++) {
+     if(this.table != undefined){
+             console.log(this.table[i] + ":" + this.value[i]);
+     }
+  }
+}
+
+var textHash = new Table();
+textHash.put("a","a");
+textHash.put("a","c");
+textHash.get("a");
+textHash.showDistro();
+</pre>
+<h3>集合</h3>
+<p>集合不能保存相同得数据！常用得方法：具有特别方法：添加，删除，包含。求交集，并集，补集，是否为子集</p>
+<pre>function Set () {
+  this.dataStore = [];
+  this.add = add;
+  this.remove = remove;
+  this.size = size;
+  this.union =union;
+  this.intersect = intersect;
+  this.subset = subset; 
+  this.difference = difference;
+  this.show = show;
+  this.contains = contains; 
+}
+function add (data) {
+  if(this.dataStore.indexOf(data) < 0){
+    this.dataStore.push(data);
+    return true;
+  }else{
+    return false;
+  }
+}
+
+function size () {
+  return this.dataStore.length;
+}
+
+function remove (data) {
+  var pos = this.dataStore.indexOf(data);
+  if(pos > -1){
+    this.dataStore.splice(pos,1);
+      return true;
+  }else{
+    return false;
+  }
+}
+
+function show () {
+  console.log(this.dataStore) ;
+}
+
+function  contains(data) {
+  if(this.dataStore.indexOf(data) > -1){
+    return true;
+  }else{
+    return false;
+  }
+}
+
+function union (set) {          //并集
+  var tempSet = new Set();
+  for (var i = 0,len = this.dataStore.length; i < len; i++) {
+    tempSet.add(this.dataStore[i]);
+  }
+  for (var i = 0,len = set.dataStore.length; i < len; i++) {
+    if(!tempSet.contains(set.dataStore[i])){
+      tempSet.dataStore.push(set.dataStore[i]);
+    }
+  }
+  return tempSet;
+}
+
+function intersect (set) {      //求交集
+  var tempSet = new Set();
+  for(var i=0;i < this.dataStore.length;i++){
+    if(set.contains(this.dataStore[i])){
+      tempSet.add(this.dataStore[i]);
+    }
+  }
+  return tempSet;
+}
+
+function subset (set) {          //是否为子集
+  if(this.size() > set.size()){
+      return false;
+  }else{
+      for(var number in this.dataStore){
+            if(!set.contains(number)){
+              return false;
+            }
+      }
+  }
+  return true;
+}
+
+function difference (set) {    //补集
+  var tempSet = new Set();
+  for (var i = 0,len=this.dataStore.length; i< len; i++){
+          if(!set.contains(this.dataStore[i])){
+            tempSet.add(this.dataStore[i]);
+          }
+  }
+  return tempSet; 
+}
+
+var textSet = new Set();
+textSet.add("ddddd");
+textSet.add("ccccc");
+var ifE = new Set();
+ifE.add("ddddd");
+ifE.add("sssss");
+textSet.union(ifE).show();
+textSet.difference(ifE).show();
+textSet.subset(ifE);
+textSet.intersect(ifE).show();u
+</pre>
+<h3>链表</h3>
+<p>链表最主要的就是指向,和节点</p>
+<pre> function NodeClass(element){
+  this.element = element;
+  this.next = null;
+}
+
+//链表操作
+//find     遍历
+//insert   需改变节点指向
+//remove   
+//dispaly  显示链表的元素
+
+function LList(){
+  this.head = new NodeClass("head");
+    this.find = find;
+    this.insert = insert;
+    this.remove = remove;
+    this.display = display;
+    this.findPrev = findPrev;
+}
+
+function find(element){
+    var curNode = this.head;
+    while (curNode.element != element) {
+      curNode = curNode.next;
+    }
+    return curNode;
+}
+
+function insert(newElement,item){
+    var newNode = new NodeClass(newElement);
+    var current = this.find(item);
+    newNode.next = current.next;
+    current.next = newNode;
+}
+
+function display(){
+  var curNode = this.head;
+  while (!(curNode.next == null)) {
+    console.log(curNode.next.element);
+    curNode = curNode.next;
+  }
+}
+
+function findPrev(item){
+  var curNode = this.head;
+  while(!(curNode == null) && (curNode.next.element !=item)){
+       curNode = curNode.next;
+  }
+  return curNode;
+}
+
+function remove(element) {
+  var targetEle = this.findPrev(element);
+  if(!(targetEle.next == null)){
+    targetEle.next = targetEle.next.next;
+  }
+}
+
+var city = new LList();
+city.insert("wuhan","head");
+city.insert("湖北","wuhan");
+city.remove("wuhan");
+city.display(); </pre>
+<p>可以对链表改造一下，让头节点指向头节点本身，在插入的时候，它会传导到整个链表本身</p>
+<pre> function NodeClass(element){
+  this.element = element;
+  this.next = null;
+}
+
+function LList(){
+  this.head = new NodeClass("head");
+  this.head.next = this.head;
+    this.find = find;
+    this.insert = insert;
+    this.remove = remove;
+    this.display = display;
+    this.findPrev = findPrev;
+}
+
+function find(element){
+  var curNode = this.head;
+  while(curNode.element != element){
+           curNode = curNode.next;
+         
+  }
+  return curNode;
+}
+
+function insert(element,after){
+    var curNode = this.find(after);
+    var newNode = new NodeClass(element);
+      newNode.next = curNode.next; 
+      curNode.next = newNode;
+}
+
+function remove(element) {
+  var targetEle = this.findPrev(element);
+  if((targetEle.next == this.head)){
+    targetEle.next = targetEle.next.next;
+  }
+}
+ 
+function display(){
+  var curNode = this.head;
+  while (!(curNode.next == null) && !(curNode.next.element == "head")) {
+    console.log(curNode.next.element);
+    curNode = curNode.next;
+  }
+}
+            
+var city = new LList();
+city.insert("wuhan","head");
+city.insert("孝感","wuhan");
+city.remove("wuhan");
+city.display();</pre>
+<p>还有是双向链表</p>
+<p>双向链表加上previous指向，在查找的时候可以加上向前查找的方法，由于重复度高，不赘述</p>
+<h3>二叉树</h3>
+<p>二叉树事树状结构，中间节点是中间值，左边是比中间小的值，右边是比中间大的值，如下</p>
+<pre>
+     10
+   5     20
+ 3   6  12  25
+</pre>
+<p>二叉树节点类如下</p>
+<pre>function BnaryTreeNode (data,left,right) {
+  this.data = data;
+  this.left = left;
+  this.right = right;
+  this.show = show;
+}
+function show () {
+  console.log(this.data) ; 
+}
+
+</pre>
+<p>二叉树类比较简单，插入，遍历，查找，移除</p>
+<pre>function BnaryTree () {
+  this.root = null;
+  this.insert = insert;
+  this.inOrder = inOrder;
+  this.remove = remove;
+  this.getSmallest = getSmallest;
+}
+</pre>
+<p>接下来是方法的实现</p>
+<pre>function insert (data) {
+  var n = new BnaryTreeNode(data,null,null);
+  if(this.root == null){
+    this.root = n;
+  }else{
+    var current = this.root;
+    var parent;
+    while (true) {
+      parent = current;
+      if(data < current.data){
+        current = current.left;
+        if(current == null){
+          parent.left = n;
+          break;
+        }
+      }else{
+        current = current.right;
+        if(current == null){
+          parent.right = n;
+          break;
+        }
+      }
+    }
+  }
+}
+
+function find (data) {
+  var current  = this.root;
+  while (current.data != null ) {
+    if(current.data = data){
+      console.log(data);
+    }else if (current.data < data) {
+      current = current.right;
+    }else{
+      current = current.left;
+    }
+  }
+  console.log(null);
+}
+
+function getSmallest (node) {
+  if(node.left == null){
+    return node;
+  }else{
+    return getSmallest(node.left);
+  }
+}
+
+function removeNode (node,data) {
+  if(node == null){
+    return null;
+  }
+  if (data == node.data) {
+       //判断有没有子节点
+    if(node.left == null && node.right == null){
+      return null;
+    }
+    //没有左子节点
+    if(node.left == null){
+      return node.right;
+    }
+    //没有右子节点
+    if(node.right == null){
+      return node.left;
+    }
+    //有两个子节点
+    var tempNode = getSmallest(node.right);
+    node.data = tempNode.data;
+    node.right = removeNode(node.right,tempNode.data);
+    return node;
+  }else if (data < node.data) {
+    node.left = removeNode(node.left,data);
+      return node;
+  }else{
+    node.right = removeNode(node.right,data);
+    return node;
+  }
+}
+
+function remove (data) {
+  root = removeNode(this.root,data);
+}
+遍历节点的三种顺序
+//中序遍历
+function inOrder (node) {
+  if(!(node == null)){
+    inOrder(node.left);     //这里使用的是递归，即调用自身
+    node.show();
+    inOrder(node.right);
+  }
+}
+
+//先序遍历
+function preOrder (node) {
+  if(!(node == null)){
+    node.show();
+    preOrder(node.left);
+    preOrder(node.right);
+  }
+}
+
+//后序遍历
+function postOrder (node) {
+  if(!(node == null)){
+    postOrder(node.left);
+    postOrder(node.right);
+    node.show();
+  }
+}
+//测试部分
+var textInOrderTree = new BnaryTree();
+textInOrderTree.insert(10);
+textInOrderTree.insert(14);
+textInOrderTree.insert(90);
+textInOrderTree.insert(11);
+textInOrderTree.insert(5);
+textInOrderTree.insert(4);
+//textInOrderTree.inOrder(textInOrderTree.root);
+//preOrder(textInOrderTree.root);
+//postOrder(textInOrderTree.root)
+textInOrderTree.remove(14);
+inOrder(textInOrderTree.root);
+</pre>
+<h3>图</h3>
+<p>图, 基本要素：顶点，边,以顶点为索引的存储边的散列</p>
+<pre>function Vertex (label) {
+  this.label = label;    //顶点的名字
+}
+function Graph (v) {
+  this.vertics = v;//顶点数
+  this.edges = 0;  //边数
+  this.adj = [];
+  for (var i = 0,len = this.vertics; i < len ; i++) {
+       this.adj[i] = [];     //初始化散列索引
+       this.adj[i].push("");
+  }
+  this.addEdge = addEdge;
+  this.showGraph = showGraph;
+}
+
+function addEdge (v,w) {    //v-w的索引就是边，即这种对应关系就是边
+  this.adj[v].push(w);
+  this.adj[w].push(v);
+  this.edges++;
+}
+
+function showGraph () {
+  for (var i = 0,len = this.vertics; i < len; i++) {
+    console.log(i + '->');     //点到点的索引
+      for (var j = 0,len = this.vertics;j < len; j++) {
+            if(this.adj[i][j] != undefined){
+              console.log(this.adj[i][j]);
+            }
+      }
+  }
+}
+
+var textGraph = new Graph(5);
+textGraph.addEdge(0,3);
+textGraph.addEdge(1,2);
+textGraph.showGraph();
+</pre>
+<p>到这里，数据结构的构造已经介绍完毕，以上所有代码都可以到浏览器控制到跑通</p>
+<h2>基本算法</h2>
+<p>算法，算法有关于空间复杂度和时间复杂度的概念，即花费的内存和时间</p>
+<p>基本算法的分类：</p>
+<ul>
+  <li>排序算法</li>
+  <li>检索算法</li>
+  <li>高级算法</li>
+</ul>
+<p>这篇文章只介绍基本通用的算法，高级算法的优化，涉及到特定的应用场景</p>
+<h3>排序算法</h3>
+<h4>冒泡排序</h4>
+<pre> function swap(arr,index1,index2){   //顺序交换的方法
+  temp = arr[index1];
+  arr[index1] = arr[index2];
+  arr[index2] = temp;
+ }
+
+function bubble (arr) {
+var numElement =  arr.length;
+  var temp;
+  for(var outer=numElement;outer>=2;--outer){   //冒泡算法是指数据从前往后比较
+    for(var inner=0;inner<=outer-1;++inner){    //和数据从后往前比较逐渐将比较大的比较小的数据分别排序到两边
+      if(arr[inner] > arr[inner+1]){
+               swap(arr,inner,inner+1);
+      }
+    }
+  }
+  return arr;
+ }
+ var textarr = [1,7,3,6,9,6];
+ //console.log(bubble(textarr));
+</pre>
+<p>这个算法的复杂度为O(n的平方);空间复杂度为O(1)</p>
+<h4>选择排序</h4>
+<pre>function selectSort (arr) {
+  var min,temp;
+  for(var outer=0,len=arr.length;outer<=len-2;outer++){
+            min = outer;
+            for(var inner = outer+1;inner<=len-1;++inner){
+              if(arr[inner] < arr[min]){
+                min = inner;
+              }
+              swap(arr,outer,min);
+            }
+  }
+ }</pre>
+ <p>选择排序的原理是 选值依次比较，选出最小的排在左边，依次往后排列</p>
+ <p>这个排序的的时间复杂度为O(n的平方),空间复杂度为O(1),但是可以明显的感觉到，他的速度比冒泡排序少一半</p>
+<h4>插入排序</h4>
+<pre>function insertionSort (arr) {
+  var temp,inner;
+  for(var outer=1;outer <= arr.length-1;++outer){
+    temp = arr[outer];
+    inner=outer;
+    while (inner > 0 && (arr[inner-1])>=temp) {
+      arr[inner] = arr[inner-1];
+      --inner;
+    }
+    arr[inner] = temp;
+  }
+ }</pre>
+ <p>这个算法的原理是从后往前，将比较大的依次往前插入</p>
+ <p>时间复杂度和空间复杂度同上</p>
+<p>以下是排序算法高级算法的分隔线</p>
+<br/>
+<h4>希尔排序</h4>
+<pre> function shellSort (arr,gaps) {
+  for(var g = 0,gap = gaps.length;g < gap;++g){
+    for(var i = gaps[g];i< arr.length;++i){
+      var temp = arr[i];
+      console.log("i" + ":" + i);
+      console.log(temp)
+      console.log("arr" + arr[i-gaps[g]]);
+      for(var j=i;j>=gaps[g]&&arr[j-gaps[g]]>temp;j-=gaps[g]){
+        arr[j] = arr[j-gaps[g]];
+        console.log(j);
+      }
+      console.log("j:"+ j);
+      arr[j]=temp;
+    }
+  }
+ }
+</pre>
+<p>这种排序的原理是传入不同的间隔，利用间隔进行排序，并不断缩小间隔，使得分散的数据可以逐渐回复到该有的位置</p>
+<h4>归并排序</h4>
+<P>归并排序的原理：将数组拆分，成对的组  ，不成对的单独拿出,将成对的组不断合并，最后与单独的组合并</P>
+<pre>function mergeSort (arr) {
+  if(arr.length < 2){
+    return;
+  }
+    var step = 1;
+    var left,right;
+    while(step < arr.length){
+       left = 0;
+         right = step;
+         while(right+step <= arr.length){//判断是否能对半分割
+               mergeArrays(arr,left,left+step,right,right+step);
+               left = right+step;
+               right = left+step;
+         }
+         if(right < arr.length){        //不能对半分，就不均分
+             mergeArrays(arr,left,left+step,right,arr.length);
+         }
+        step*=2;
+    }
+ }
+
+ function mergeArrays (arr,startLeft,stopLeft,startRight,stopRight) {
+         var leftArr = new Array(stopLeft-startLeft+1);
+         var rightArr = new Array(stopRight-startRight+1);
+         var k = startRight;
+         for(var i = 0;i < rightArr.length-1;++i){  // 传入数值
+             rightArr[i] = arr[k];
+             ++k; 
+         }
+         var h = startLeft;
+         for(var i = 0;i < leftArr.length-1;++i){
+             leftArr[i] = arr[h];
+             ++h;
+         }
+         var m=0,
+             n=0;
+         leftArr[leftArr.length-1] = Infinity;
+         rightArr[rightArr.length-1] = Infinity;
+         for (var j = startLeft;j < stopRight;j++) {     //比较数组,因为左边数组长，当比较完成时，结果直接呈现在原数组上
+          if(leftArr[m] < rightArr[n]){
+            arr[j] = leftArr[m];
+              m++;
+          }else{
+             arr[j] =rightArr[n];
+             n++;
+          }
+         }
+ }
+//mergeSort(textarr);
+//shellSort(textarr,[3,2,1]);</pre>
+<h4>快速排序</h4>
+<p>使用递归，以基准值为中间数，分两队排序，并将两队都完成排序合并</p>
+<pre>function quickSort (arr) {
+  if(arr.length == 0){
+         return [];
+  }
+  var baseNum = arr[0];
+  var lesser = [];
+  var greater = [];
+  for(var i=1;i < arr.length; ++i){
+    if(arr[i] < baseNum){
+      lesser.push(arr[i]);
+    }else{
+      greater.push(arr[i]);
+    }
+  }
+  return quickSort(lesser).concat(baseNum,quickSort(greater));
+}
+
+console.log(quickSort(textarr))</pre>
+<p>这种方式的排序时间复杂度为O(n),空间复杂度为O(n)</p>
+<h3>检索算法</h3>
+<h4>二分法</h4>
+<pre>function binSearch (arr,data) {
+  var upperBound = arr.length-1;
+  var lowerBound = 0;
+  while (lowerBound <= upperBound) {
+    var mid = Math.floor((upperBound + lowerBound)/2);
+    if(arr[mid] < data){
+      lowerBound = mid + 1;
+    }else if(arr[mid] > data){
+      upperBound = mid-1;
+    }else{
+      return mid;
+    }
+  }
+
+  return -1;
+}</pre>
+<p>时间复杂度为O(n),空间复杂度为O(1)</p>
+<h3>高级算法</h3>
+<p>比如斐波那契数列递归的优化</p>
+<pre>function dynFib(n) {  
+        var val = [];       
+    for (var i = 0; i <= n; ++i) {
+        val[i] = 0;       
+    }       
+    if (n == 1 || n == 2) { 
+        return 1;       
+    }else {
+       val[1] = 1;                    //初始值
+       val[2] = 2;    
+    for (var i = 3; i <= n; ++i) { 
+      val[i] = val[i-1] + val[i-2];   //状态转移式         
+    }          
+    return val[n-1];       
+}    
+} </pre>
+<p>动态规划的思想是：根据现有的状态，得到下一步得状态。逐渐求得最后得状态</p>
+<p>当然这是最简单得应用</p>
+<p>另外简单提一下贪心算法</p>
+<p>贪心算法得思想是：每次都求得最优解，如果不能求到最优解，就求到次优解</p>
+<p> 
+</div>
+  </div>
+  </div>
+	<script type="text/javascript" src="../../js/public.js"></script>
+  <script type="text/javascript" src="../../js/progress.js"></script>
+</body>
+</html>
