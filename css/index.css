@@ -63,15 +63,15 @@ body{
 	transform: translate(100%,100%);
 	z-index:1;
 }
-@media (max-width: 480px){
+@media (min-width: 480px) and (max-width: 664px){
 .page-top{
-	top: -2650px;
+	top: -2236px;
 }
 .page-center{
-	top: -1710px;
+	top: -1292px;
 }
 .page-bottom{
-	top: -605px;
+	top: -536px;
 }
 .screen-lm{
 	display: none;
@@ -80,7 +80,7 @@ body{
 	left: -98.7%;
 }
 }
-@media (min-width: 400px) and (max-width: 768px){
+@media (min-width: 664px) and (max-width: 768px){
 .page-top{
 	top: -2034px;
 }
