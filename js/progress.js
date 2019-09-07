@@ -24,7 +24,6 @@ content.style.top = 0 + 'px';
 progress.style.width = wrapperH/contentH*100 + '%';
 
 function scrollContent (e) {
-	e.preventDefault();
 	var wheelDeltaData;
 	var contentH = content.offsetHeight;
     var wrapperH = wrapperBox.offsetHeight;
@@ -124,7 +123,7 @@ window.addEventListener('touchstart', function (event) {
 }, false)
 window.addEventListener('touchmove', function (event) {
   event.preventDefault()
-}, false)
+}, { passive :false })
 window.addEventListener('touchend', function (event) {
   if (!start) {
     start = 0;

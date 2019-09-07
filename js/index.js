@@ -52,7 +52,6 @@ function client(){
 
 var wheelDeltaData;
 function scrollContent(DOMSet,e){
-    e.preventDefault();
   if (e.wheelDelta) {
        wheelDeltaData = (client().engine.opera && client().engine.opera>9.5)? -e.wheelDelta : e.wheelDelta;
   }else{
@@ -96,7 +95,7 @@ window.addEventListener('touchstart', function (event) {
 }, false)
 window.addEventListener('touchmove', function (event) {
   event.preventDefault()
-},  false)
+},  { passive :false })
 window.addEventListener('touchend', function (event) {
   if (start) {
     start = 0;
