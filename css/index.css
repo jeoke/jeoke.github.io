@@ -65,13 +65,13 @@ body{
 }
 @media (max-width: 480px){
 .page-top{
-	top: -2340px;
+	top: -2650px;
 }
 .page-center{
 	top: -1681px;
 }
 .page-bottom{
-	top: -561px;
+	top: -605px;
 }
 .screen-lm{
 	display: none;
@@ -85,7 +85,7 @@ body{
 	top: -2034px;
 }
 .page-center{
-	top: -1201px;
+	top: -1241px;
 }
 .page-bottom{
 	top: -448px;
