@@ -63,6 +63,23 @@ body{
 	transform: translate(100%,100%);
 	z-index:1;
 }
+@media screen and (max-width: 480px){
+.page-top{
+	top: -2136px;
+}
+.page-center{
+	top: -1292px;
+}
+.page-bottom{
+	top: -468px;
+}
+.screen-lm{
+	display: none;
+}
+.full-page{
+	left: -98.7%;
+}
+}
 @media screen and (min-width: 480px) and (max-width: 664px){
 .page-top{
 	top: -2136px;
