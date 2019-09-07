@@ -101,7 +101,7 @@ window.addEventListener('touchend', function (event) {
   if (start) {
     start = 0
   }
-  touchTime = new new Date().getTime() - touchTime;
+  touchTime = new Date().getTime() - touchTime;
   let gap = event.changedTouches[0].clientY - start
   let direction
   if (gap > 50) { direction = 'up' } else if (gap < -50) { direction = 'down' }
