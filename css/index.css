@@ -63,8 +63,24 @@ body{
 	transform: translate(100%,100%);
 	z-index:1;
 }
-
-@media (max-width: 768px){
+@media (max-width: 480px){
+.page-top{
+	top: -2290px;
+}
+.page-center{
+	top: -1311px;
+}
+.page-bottom{
+	top: -561px;
+}
+.screen-lm{
+	display: none;
+}
+.full-page{
+	left: -98.7%;
+}
+}
+@media (min-width: 400px) and (max-width: 768px){
 .page-top{
 	top: -2034px;
 }

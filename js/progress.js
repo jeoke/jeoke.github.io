@@ -169,9 +169,9 @@ function scrollHandler (direction) {
     var wrapperH = wrapperBox.offsetHeight;
     console.log(direction);
       if (direction === 'down') {
-         preScroll(wrapperH,contentH);
+         nextScroll(wrapperH,contentH);         
       } else {
-         nextScroll(wrapperH,contentH);
+         preScroll(wrapperH,contentH);
       }
       timer = setTimeout(function () {
         clearTimeout(timer);
@@ -181,8 +181,6 @@ function scrollHandler (direction) {
 
 window.addEventListener('touchstart', function (event) {
   window.start = event.touches[0].clientY;
-  console.log(start);
-  console.log(event.touches[0].clientY)
 }, false)
 window.addEventListener('touchmove', function (event) {
   event.preventDefault()
@@ -194,8 +192,6 @@ window.addEventListener('touchend', function (event) {
   console.log(start);
   var gap = event.changedTouches[0].clientY - start;
   var direction;
-  console.log(start);
-  console.log(gap);
   if (gap > 50) { direction = 'up' } else if (gap < -50) { direction = 'down' }
   scrollHandler(direction)
 }, false)

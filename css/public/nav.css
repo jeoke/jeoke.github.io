@@ -96,11 +96,17 @@
   left: 0;
   top: 0;
 }
+@media (max-width: 480px){
+  .fixed-pos{
+      right: 0px;
+  }
+}
 @media (max-width: 768px){
   .nav-message{
     width: 40%;
   }
 }
+
 @media (min-width: 968px){
   .nav-message{
     width: 20%;
