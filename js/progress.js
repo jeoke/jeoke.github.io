@@ -115,7 +115,7 @@ function scrollHandler (direction) {
       timer = setTimeout(function () {
         clearTimeout(timer);
         timer = null
-      }, 700);
+      }, 360);
 }
 
 window.addEventListener('touchstart', function (event) {
