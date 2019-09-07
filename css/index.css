@@ -73,7 +73,7 @@ body{
 .page-bottom{
 	top: -488px;
 }
-.screen-mlittle{
+.screen-mlittle,.screen-lm{
 	display: none;
 }
 .full-page{
