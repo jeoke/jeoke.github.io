@@ -104,7 +104,7 @@ window.addEventListener('touchend', function (event) {
   let gap = event.changedTouches[0].clientY - start
   let direction
   if (gap > 100) { direction = 'up' } else if (gap < -100) { direction = 'down' }
-  if(touchTime < 180 && direction === 'undefined'){
+  if(touchTime < 180 && typeof direction === 'undefined'){
     return;
   }else{
     scrollHandler(direction);    
