@@ -98,7 +98,7 @@
 }
 @media (max-width: 480px){
   .fixed-pos{
-      right: 0px;
+      display: none;
   }
 }
 @media (max-width: 768px){
