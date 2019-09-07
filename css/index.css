@@ -65,10 +65,10 @@ body{
 }
 @media (max-width: 480px){
 .page-top{
-	top: -2528px
+	top: -2340px;
 }
 .page-center{
-	top: -1311px;
+	top: -1681px;
 }
 .page-bottom{
 	top: -561px;
