@@ -78,7 +78,7 @@ function scrollHandler (direction) {
       timer = setTimeout(function () {
         clearTimeout(timer);
         timer = null
-      }, 1600)
+      }, 700)
     }
 
 var liContrller = document.getElementById('controller-bar').getElementsByTagName('li');
@@ -96,19 +96,19 @@ window.addEventListener('touchstart', function (event) {
 }, false)
 window.addEventListener('touchmove', function (event) {
   event.preventDefault()
-},  { passive: false })
+},  false)
 window.addEventListener('touchend', function (event) {
   if (start) {
-    start = 0
+    start = 0;
   }
   touchTime = new Date().getTime() - touchTime;
   let gap = event.changedTouches[0].clientY - start
   let direction
-  if (gap > 50) { direction = 'up' } else if (gap < -50) { direction = 'down' }
+  if (gap > 100) { direction = 'up' } else if (gap < -100) { direction = 'down' }
   if(touchTime < 180){
     return;
   }else{
-    scrollHandler(direction)    
+    scrollHandler(direction);    
   }
 }, false)
 
