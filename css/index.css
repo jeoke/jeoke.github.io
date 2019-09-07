@@ -65,7 +65,7 @@ body{
 }
 @media screen and (max-width: 480px){
 .page-top{
-	top: -2272px;
+	top: -2345px;
 }
 .page-center{
 	top: -1348px;
@@ -73,11 +73,15 @@ body{
 .page-bottom{
 	top: -488px;
 }
-.screen-lm{
+.screen-mlittle{
 	display: none;
 }
 .full-page{
 	left: -98.7%;
+}
+.avitarImg{
+	width: 100px;
+	height: 100px;
 }
 }
 @media screen and (min-width: 480px) and (max-width: 664px){
