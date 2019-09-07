@@ -65,7 +65,7 @@ body{
 }
 @media screen and (max-width: 480px){
 .page-top{
-	top: -2150px;
+	top: -2200px;
 }
 .page-center{
 	top: -1348px;
@@ -85,7 +85,7 @@ body{
 	top: -2136px;
 }
 .page-center{
-	top: -1292px;
+	top: -1302px;
 }
 .page-bottom{
 	top: -468px;
