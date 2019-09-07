@@ -128,13 +128,11 @@ window.addEventListener('touchend', function (event) {
   if (!start) {
     start = 0;
   }
-  if(event.target.nodeName.toLowerCase() === 'a'){
-    event.preventDefault();
-  }else {
-    var gap = event.changedTouches[0].clientY - start;
-    var direction;
-    if (gap > 100) { direction = 'up' } else if (gap < -100) { direction = 'down' }
-       scrollHandler(direction)
-    }
+
+  var gap = event.changedTouches[0].clientY - start;
+  var direction;
+  if (gap > 100) { direction = 'up' } else if (gap < -100) { direction = 'down' }
+     scrollHandler(direction)
+
 
 }, false)
