@@ -65,13 +65,13 @@ body{
 }
 @media screen and (max-width: 480px){
 .page-top{
-	top: -2136px;
+	top: -2272px;
 }
 .page-center{
-	top: -1292px;
+	top: -1348px;
 }
 .page-bottom{
-	top: -468px;
+	top: -488px;
 }
 .screen-lm{
 	display: none;
