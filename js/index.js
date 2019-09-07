@@ -67,6 +67,7 @@ function scrollContent(DOMSet,e){
 
 var timer = null;
 var start = 0;
+var touchTime;
 function scrollHandler (direction) {
       if (timer != null) { return }
       if (direction === 'down') {
@@ -91,6 +92,7 @@ document.body.addEventListener('DOMMouseScroll', scrollContent.bind(this,fullPag
 
 window.addEventListener('touchstart', function (event) {
   start = event.touches[0].clentY
+  touchTime = new Date().getTime();
 }, false)
 window.addEventListener('touchmove', function (event) {
   event.preventDefault()
@@ -99,9 +101,14 @@ window.addEventListener('touchend', function (event) {
   if (start) {
     start = 0
   }
+  touchTime = new new Date().getTime() - touchTime;
   let gap = event.changedTouches[0].clientY - start
   let direction
   if (gap > 50) { direction = 'up' } else if (gap < -50) { direction = 'down' }
-  scrollHandler(direction)
+  if(touchTime < 240){
+    return;
+  }else{
+    scrollHandler(direction)    
+  }
 }, false)
 
