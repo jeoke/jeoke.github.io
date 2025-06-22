@@ -1,0 +1,59 @@
+body{
+	overflow-x: hidden;
+}
+#aside img{
+	width: 100px;
+	height: 100px;
+}
+.row img{
+	width: 100%;
+	height: 400px;
+}
+.row div{
+	margin-left: 10px;
+    margin-top: 10px;
+}
+#tips{
+    position: fixed;
+    top: 40%;
+    right: 37px;
+    width: 27%;
+    height: auto;
+}
+#tips img{
+    width: 149px;
+    height: 80%;
+}
+.media-body{
+	vertical-align: middle;
+}
+.caption input{
+	width: 50%;
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+.tips::after{
+	content: attr(data-number);
+    position: relative;
+    left: 35px;
+    color: black;
+}
+h3{
+    margin-bottom: 1px;
+    margin-top: -10px;
+}
+.caption p:nth-child(2){
+	height: 50px;
+    display:table-cell;
+    vertical-align: middle;
+}
+
+#aside{
+    top: 20% !important;
+}
+@media (max-width:990px){
+	#tips{
+		visibility: hidden;
+
+	}
+}

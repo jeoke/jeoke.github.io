@@ -1,0 +1,50 @@
+canvas{
+	display: inline;
+	margin-right: 5%;
+    margin-left: 5%;
+    width: 90%;
+}
+.headtips{
+	margin-right: 5%;
+    margin-left: 5%;
+	margin-bottom: 9px;
+}
+.canvaswrapper{
+    padding-bottom: 6px;
+    margin-right: 5%;
+    margin-left: 5%;
+    border: solid;
+    border-color: #e6e2e2;
+    margin-bottom: 10px;
+}
+.canvaswrapper canvas{
+	margin-top: 10px;
+    margin-bottom: 8px;
+}
+#canvasmain{
+    background-color: #e7e7e7;
+}
+#canvasassist{
+	background-color: #f0ad4e;
+
+}
+#computerassist,#computerassist1{
+    background-color: #e7e7e7;
+}
+.mainparam,.assistbutton{
+	display: inline;
+    width: 70%;
+}
+.mainparam input{
+	float: left;
+	margin-right: 1%;
+    width: 20%;
+}
+.mainparam:after{
+    content: "";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+}
+

@@ -1,0 +1,19 @@
+img{
+	width: 100px;
+}
+#bookmenu{
+	width: 80%;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+    margin-top: 30px;
+    padding-top: 20px;
+    border: 1px solid #fff;
+    box-shadow: 0 4px 5px 0 rgba(0,0,0,.14), 0 1px 10px 0 rgba(0,0,0,.12), 0 2px 4px -1px rgba(0,0,0,.2);
+    background-color: white;
+    padding-bottom: 30px;
+}
+#bookmenu img:hover{
+	transform: scale(1.2);
+}
