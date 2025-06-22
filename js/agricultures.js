@@ -1,13 +1,13 @@
 var agricultures = [{
       dishs:"baicai",
       name:"小白菜",
-      src:".././img/agriculture/baicai.jpg",
+      src:".././img/agriculture/baicai.webp",
       description:"三月底到4月底种植，秋季种植一般在8月左右",
       number:"20"
 }];
 var pulicagriculture = [{
 	  name:"辣椒",
-      src:".././img/agriculture/chili.jpg",
+      src:".././img/agriculture/chili.webp",
       description:"早春种植，10月底育苗，12月中下旬移栽。晚秋种植，八月中下旬种植，十月中下旬移栽。生殖周期三个月",
       number:"40"
 }];
