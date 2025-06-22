@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="../css/bootstrap.min.css" />
+<link rel="stylesheet" href="../css/pagecss/computersch.css" />
+<link rel="stylesheet" href="../css/pagecss/public.css" />
+<link rel="stylesheet" href="../css/search.css" />
+	<title>bootstrap实验</title>
+</head>
+
+<body>
+	<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <a class="navbar-brand" href="../index.html">Brand</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav hidden-xs">
+      <li ><a href=".././index.html">简述 <span class="sr-only">(current)</span></a></li>
+        <li class="active"><a href="computersch.html" >计算知识专区</a></li>
+        <li><a href="knowledge.html">知识专区</a></li>
+        <li><a href="book.html">书籍专区</a></li>
+        <li><a href="foundation.html">基础案例</a></li>
+        <li><a href="agriculture.html">农产品</a></li>
+      </ul>
+      <form class="navbar-form navbar-left">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Search" id="search">
+        </div>
+        <button type="submit" class="btn btn-default" id="buttons">搜索</button>
+      </form>
+      <ul class="nav navbar-nav navbar-right visible-lg-block">
+        <li><a href="flow.html">流量卡专区</a></li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+	<main>
+		<h3  class="headtips">1.首先需要建立数学模型<span class="label label-default">tip</span></h3>
+		<h4 class="headtips">该计算功能可用于区域规划，区域优先级排序，图优化，合并优化等各种数学模型优化</h4>
+		<h4 class="headtips">在此提供两种数学模型：图优化，优先级排序</h4>
+		<h5 class="headtips">请按需添加参数</h5>
+		<div class="canvaswrapper col-md-8">
+		<canvas id="computerassist" ></canvas>
+    <canvas id="computerassist1"></canvas>
+    <form class="assistbutton">
+          <button class="btn btn-default" id="graph">图优化</button>
+      </form>
+		</div>
+		<div class="canvaswrapper col-md-8">
+		<canvas id="canvasmain" >
+		</canvas>
+    <form class='mainparam '>
+    <input type="number" min="0" max="300" name="" placeholder="横坐标" class="form-control" id="abscissa">
+    <input type="number" min="0" max="150" name="" placeholder="纵坐标" class="form-control" id="vertical">
+    <input type="text"  name="" placeholder="区域(汉字)" class="form-control" id="fliterc">
+    </form>
+    <form class='mainparam'>
+    <input type="number" min="0" max="300" name="" placeholder="长" class="form-control" id="tall">
+    <input type="number" min="0" max="150" name="" placeholder="宽" class="form-control" id="wide">
+    <button class="btn btn-default" id="btn-parm">添加参数</button>
+    </form>
+		</div>
+		
+		<div class="canvaswrapper col-md-8">
+		<canvas id="canvasassist" ></canvas>
+    <form class="assistbutton">
+          <button class="btn btn-default" id ="sort">优先级排序</button>
+      </form>
+		</div>
+		
+	</main>
+	<aside id="aside" class="col-md-3 visible-lg-block" >
+		<div class="media">
+  <div class="media-left media-middle">
+  </div>
+  <div class="media-body">
+    <h4 class="media-heading hb">该图优化纯计算程序制作，可用于快递路径点部优化，中转站点出货口规划，货量排序合并，高速路口规划。如果联网可自行研究路段优化，自动化识别分拣程序。改进也可用于最短全路程路径。另外也可自行研究线性优化算法，寻址算法等。由于条件所限，简单实现介绍一下，自定义参数请自行研究或者付费研究。</h4>
+  </div>
+</div>
+	</aside>
+	<footer></footer>
+</body>
+<script type="text/javascript" src="../js/computersch.js"></script>
+<script type="text/javascript" src="../js/public/search.js"></script>
+</html>
