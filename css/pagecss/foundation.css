@@ -27,3 +27,13 @@ div.media-left img{
 .container-fluid{
 	position: relative;
 }
+
+@media (max-width: 338px){
+    #contentmain img {
+       height: 100px;
+    }
+    div.media-left img {
+       width: 106%;
+       height: 34%;
+    }
+}

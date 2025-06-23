@@ -57,3 +57,13 @@ h3{
 
 	}
 }
+@media (max-width: 338px){
+    .row {
+       margin-right: 0px; 
+       margin-left: 0px; 
+     }
+    .row div {
+     margin-left: 0px; 
+     margin-top: 0px; 
+    }
+}
