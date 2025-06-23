@@ -28,7 +28,7 @@ div.media-left img{
 	position: relative;
 }
 
-@media (max-width: 376px){
+@media (max-width: 880px){
     #contentmain img {
        height: 100px;
     }

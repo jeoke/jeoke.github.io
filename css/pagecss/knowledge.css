@@ -27,14 +27,13 @@
 .jumbotron {
 	margin-top: 30px;
 }
-@media (max-width: 376px){
+@media (max-width: 880px){
     #asideassist a span:last-child{
 	  display: none;
     }
     #asideassist .glyphicon{
       display: block;
       position: relative;
-      left: -6px
     }
     .box-shadow {
       margin-top: 14px; 
