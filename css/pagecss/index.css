@@ -295,7 +295,7 @@ footer{
     display: none;
     visibility: hidden;
 }
-@media (max-width: 338px){
+@media (max-width: 376px){
     #aside{
       display: none;
     }
