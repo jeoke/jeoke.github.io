@@ -130,7 +130,7 @@ document.getElementById("next").addEventListener("click",function() {
 });
 
 var tips1 = "如需购买流量卡，扫描二维码。跳转到购买页，或者复制链接";
-var tipsa="<a>https://172.lot-ml.com/ProductEn/Index/3b5aa1e7d3bf7d80</a>"
+var tipsa="<a> https://hy.yunhaoka.com/#/pages/micro_store/index?agent_id=c5a9675169732510</a>"
 var tips2="跳转到购买链接，购买前请仔细查看详情说明。";
 var topswarapper = document.createElement("div");
 
@@ -161,7 +161,7 @@ sets();
         		console.log(tips1.length)
         		div.innerHTML+=tipsa; 
         		var ac = document.getElementsByTagName("footer")[0].getElementsByTagName("a")[0];
-        		ac.href = "https://172.lot-ml.com/ProductEn/Index/3b5aa1e7d3bf7d80";
+        		ac.href = "https://hy.yunhaoka.com/#/pages/micro_store/index?agent_id=c5a9675169732510";
         		ac.target = "_blank";
         	}, tips1.length*100);
         	setTimeout(function(argument) {
